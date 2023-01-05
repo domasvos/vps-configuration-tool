@@ -4,8 +4,10 @@ vps_information() {
     # Set the text color to gold
     echo -e "\033[33m"
 
-    # Display the Linux distro name
-    cat /etc/os-release | grep '^NAME=' | sed 's/NAME=//g' | tr -d '"'
+    # Display the Linux distro name and version
+    distro_name=$(grep '^NAME=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
+    distro_version=$(grep '^VERSION_ID=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
+    echo "Linux distro: $distro_name $distro_version"
 
     # Set the text color to red
     echo -e "\033[31m"
@@ -56,7 +58,7 @@ menu() {
             else
                 # Return to the options menu
                 vps_information
-		menu
+		        menu
             fi
             ;;
         2)
