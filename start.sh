@@ -44,6 +44,7 @@ vps_information() {
 
 menu() {
     # Handle the user's selection
+
     case $choice in
         1)
             # Display the necessary requirements for CyberPanel
