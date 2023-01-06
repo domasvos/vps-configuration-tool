@@ -44,7 +44,7 @@ vps_information() {
 
 menu() {
     # Handle the user's selection
-
+    while true; do
     case $choice in
         1)
             # Display the necessary requirements for CyberPanel
@@ -67,9 +67,7 @@ menu() {
             break
             ;;
     esac
+    done
 }
-
-while true; do 
-    vps_information
-    menu
-done
+vps_information
+menu
