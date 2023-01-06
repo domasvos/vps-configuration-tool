@@ -1,5 +1,17 @@
 #!/bin/bash
 
+get_web_server() {
+    if command -v apache2 > /dev/null; then
+        echo "Apache"
+    elif command -v nginx > /dev/null; then
+        echo "Nginx"
+    elif command -v lighttpd > /dev/null; then
+        echo "Lighttpd"
+    else
+        echo "N/A"
+    fi
+}
+
 vps_information() {
     # Set the text color to gold
     echo -e "\033[33m"
@@ -10,6 +22,11 @@ vps_information() {
     echo "Linux distro: $distro_name $distro_version"
 
     # Set the text color to red
+    echo -e "\033[31m"
+
+    web_server=$(get_web_server)
+    echo -e "Web Server:\033[32m\033[5m $web_server \033[0m"
+
     echo -e "\033[31m"
 
     # Display the disk usage with green and blinking text for used and total amount
