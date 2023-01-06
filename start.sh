@@ -50,7 +50,8 @@ vps_information() {
     # Display the options menu
     echo "Please choose an option:"
     echo "1. Install CyberPanel"
-    echo "2. Exit"
+    echo "2. Install Content Management System"
+    echo "3. Exit"
 
     # Read in the user's selection
     read -p "Enter your choice: " choice
@@ -61,7 +62,6 @@ vps_information() {
 
 menu() {
     # Handle the user's selection
-    while true; do
     case $choice in
         1)
             # Display the necessary requirements for CyberPanel
@@ -79,12 +79,17 @@ menu() {
 		        menu
             fi
             ;;
-        2)
+        2)  bash cms/select_cms.sh
+            ;;
+
+        3)
             # Exit the script
-            break
+            run=false
             ;;
     esac
-    done
 }
+run=true
+while $run; do
 vps_information
 menu
+done
