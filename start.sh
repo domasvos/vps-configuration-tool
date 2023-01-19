@@ -79,7 +79,8 @@ menu() {
 		        menu
             fi
             ;;
-        2)  bash cms/select_cms.sh
+        2)
+            bash cms/select_cms.sh
             ;;
 
         3)
