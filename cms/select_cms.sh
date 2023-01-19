@@ -1,6 +1,6 @@
 #!/bin/bash
 
-selectcms() {
+selectCms() {
 
     echo "Select which Content Management System you wish to install [1-6]: "
     echo "1. WordPress"
@@ -28,5 +28,5 @@ selectcms() {
 
 run=true
 while $run; do
-selectcms
+selectCms
 done
