@@ -29,9 +29,9 @@ install_wordpress() {
         i=$((i+1))
     done
     sudo apt-get update
-    sudo mkdir -p /srv/www/wordpress$i
-    sudo chown www-data: /srv/www/wordpress$i
-    curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www/wordpress$i
+    sudo mkdir -p /srv/www/
+    sudo chown www-data: /srv/www/
+    curl https://wordpress.org/latest.tar.gz | sudo -u www-data tar zx -C /srv/www/ && mv wordpress wordpress$i
     sudo ln -s /srv/www/wordpress$i /var/www/html/wordpress$i
     sudo chown -R www-data:www-data /var/www/html/wordpress$i
 }
