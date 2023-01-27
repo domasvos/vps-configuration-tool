@@ -17,22 +17,29 @@ else
     exit 1
 fi
 
+# Determine the next available WordPress directory
+i=1
+while [ -d "/var/www/html/wordpress$i" ]; do
+    i=$((i+1))
+done
+
 # Install WordPress
 sudo apt-get update
 sudo apt-get install -y wordpress
 
 # Configure WordPress for the chosen web server
 if [ "$WEBSERVER" == "nginx" ]; then
-    sudo ln -s /usr/share/wordpress /var/www/html
-    sudo chown -R www-data:www-data /var/www/html
+    sudo ln -s /usr/share/wordpress /var/www/html/wordpress$i
+    sudo chown -R www-data:www-data /var/www/html/wordpress$i
     sudo service nginx restart
 else
-    sudo ln -s /usr/share/wordpress /var/www/html
-    sudo chown -R www-data:www-data /var/www/html
+    sudo ln -s /usr/share/wordpress /var/www/html/wordpress$i
+    sudo chown -R www-data:www-data /var/www/html/wordpress$i
     sudo service apache2 restart
 fi
 
 # Configure the database for WordPress
-sudo mysql -e "CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
-sudo mysql -e "GRANT ALL ON wordpress.* TO 'wpuser'@'localhost' IDENTIFIED BY 'password';"
+DBNAME="wordpress$i"
+sudo mysql -e "CREATE DATABASE $DBNAME DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+sudo mysql -e "GRANT ALL ON $DBNAME.* TO 'wpuser'@'localhost' IDENTIFIED BY 'password';"
 sudo mysql -e "FLUSH PRIVILEGES;"
