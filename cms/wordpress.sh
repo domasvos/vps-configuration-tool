@@ -58,6 +58,34 @@ configure_webserver() {
     fi
 }
 
+configure_apache() {
+
+    read -p "Enter the desired port number [default 80]: " port
+    if [ -z "$port" ]; then
+        port=80
+    fi
+    if [ "$(lsof -i:$port | grep -c "LISTEN")" -ne 0 ]; then
+        echo "Port $port is already in use. Please choose a different port"
+        configure_apache
+    fi
+
+    cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress$i.conf
+<VirtualHost *:$port>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/html/wordpress$i
+        ServerName wordpress$i
+        <Directory /var/www/html/wordpress$i>
+            AllowOverride All
+        </Directory>
+        ErrorLog \${APACHE_LOG_DIR}/error.log
+        CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EOF
+    echo -e "\n# Added by Opti-Tool\nListen $port" >> /etc/apache2/ports.conf
+    sudo a2ensite wordpress$i
+    sudo service apache2 restart
+}
+
 # Check and install dependencies
 deps=("ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip")
 for dep in "${deps[@]}"
@@ -69,3 +97,4 @@ check_webserver
 install_wordpress
 configure_database
 configure_webserver
+configure_apache
