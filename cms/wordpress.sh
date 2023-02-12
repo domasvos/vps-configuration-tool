@@ -49,7 +49,10 @@ configure_database() {
     sudo mysql -e "CREATE DATABASE $DBNAME DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
     sudo mysql -e "GRANT ALL ON $DBNAME.* TO '$wpuser'@'localhost' IDENTIFIED BY '$wppass';"
     sudo mysql -e "FLUSH PRIVILEGES;"
-    cp -r "/srv/www/wordpress$i/wp-config-sample.php" "/srv/www/wordpress$i/wp-config.php"
+    sudo -u www-data cp -r "/srv/www/wordpress$i/wp-config-sample.php" "/srv/www/wordpress$i/wp-config.php"
+    sudo -u www-data sed -i "s/database_name_here/$DBNAME/" "/srv/www/wordpress$i/wp-config.php"
+    sudo -u www-data sed -i "s/username_here/$wpuser/" "/srv/www/wordpress$i/wp-config.php"
+    sudo -u www-data sed -i "s/password_here/$wppass/" "/srv/www/wordpress$i/wp-config.php"
 }
 
 # Function to configure WordPress for the chosen web server
