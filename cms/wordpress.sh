@@ -3,8 +3,7 @@
 # Function to check if a command is installed
 check_installed() {
     if ! [ -x "$(command -v "$1")" ]; then
-        echo "$1 is not installed, installing it now"
-        sudo apt-get install -y "$1"
+        sudo apt-get install -y "$1" > /dev/null 2>&1
     else
         echo "$1 is already installed"
     fi
