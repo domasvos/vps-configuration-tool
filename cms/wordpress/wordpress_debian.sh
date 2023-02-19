@@ -53,15 +53,14 @@ configure_database() {
     sudo -u www-data sed -i "s/database_name_here/$DBNAME/" "/srv/www/wordpress$i/wp-config.php"
     sudo -u www-data sed -i "s/username_here/$wpuser/" "/srv/www/wordpress$i/wp-config.php"
     sudo -u www-data sed -i "s/password_here/$wppass/" "/srv/www/wordpress$i/wp-config.php"
-    sed -i "/define( 'AUTH_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'SECURE_AUTH_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'LOGGED_IN_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'NONCE_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'AUTH_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'SECURE_AUTH_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'LOGGED_IN_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'NONCE_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    echo "$salt" >> "/srv/www/wordpress$i/wp-config.php"
+    sed -i "/define( 'AUTH_KEY'/c\define( 'AUTH_KEY', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
+    sed -i "/define( 'SECURE_AUTH_KEY'/c\define( 'SECURE_AUTH_KEY', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
+    sed -i "/define( 'LOGGED_IN_KEY'/c\define( 'LOGGED_IN_KEY', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
+    sed -i "/define( 'NONCE_KEY'/c\define( 'NONCE_KEY', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
+    sed -i "/define( 'AUTH_SALT'/c\define( 'AUTH_SALT', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
+    sed -i "/define( 'SECURE_AUTH_SALT'/c\define( 'SECURE_AUTH_SALT', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
+    sed -i "/define( 'LOGGED_IN_SALT'/c\define( 'LOGGED_IN_SALT', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
+    sed -i "/define( 'NONCE_SALT'/c\define( 'NONCE_SALT', '$(openssl rand -base64 48 | tr -d '\n')');" "/srv/www/wordpress$i/wp-config.php";
 }
 
 # Function to configure WordPress for the chosen web server
