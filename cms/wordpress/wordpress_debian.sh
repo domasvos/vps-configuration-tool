@@ -35,6 +35,16 @@ install_wordpress() {
     sudo chown -R www-data:www-data /var/www/html/wordpress$i
 }
 
+generate_keys() {
+  for key in "AUTH_KEY" "SECURE_AUTH_KEY" "LOGGED_IN_KEY" "NONCE_KEY" "AUTH_SALT" "SECURE_AUTH_SALT" "LOGGED_IN_SALT" "NONCE_SALT"; do
+    # Generate a random 64-character string
+    random_string=$(openssl rand -base64 48 | tr -d '\n')
+
+    # Replace the placeholder with the random string in the wp-config.php file
+    sed -i "s|define( '$key',\s*'put your unique phrase here' );|define( '$key',  '$random_string' );|" "/srv/www/wordpress$i/wp-config.php"
+  done
+}
+
 # Function to configure the database for WordPress
 configure_database() {
     if [ -x "$(command -v mariadb)" ]; then
@@ -45,7 +55,6 @@ configure_database() {
     read -p "Enter WordPress database username: " wpuser
     read -p "Enter WordPress database password: " wppass
     DBNAME="wordpress$i"
-    salt=$(curl -s https://api.wordpress.org/secret-key/1.1/salt/)
     sudo mysql -e "CREATE DATABASE $DBNAME DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
     sudo mysql -e "GRANT ALL ON $DBNAME.* TO '$wpuser'@'localhost' IDENTIFIED BY '$wppass';"
     sudo mysql -e "FLUSH PRIVILEGES;"
@@ -53,15 +62,7 @@ configure_database() {
     sudo -u www-data sed -i "s/database_name_here/$DBNAME/" "/srv/www/wordpress$i/wp-config.php"
     sudo -u www-data sed -i "s/username_here/$wpuser/" "/srv/www/wordpress$i/wp-config.php"
     sudo -u www-data sed -i "s/password_here/$wppass/" "/srv/www/wordpress$i/wp-config.php"
-    sed -i "/define( 'AUTH_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'SECURE_AUTH_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'LOGGED_IN_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'NONCE_KEY/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'AUTH_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'SECURE_AUTH_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'LOGGED_IN_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    sed -i "/define( 'NONCE_SALT/d" "/srv/www/wordpress$i/wp-config.php";
-    echo "$salt" >> "/srv/www/wordpress$i/wp-config.php"
+    generate_keys
 }
 
 # Function to configure WordPress for the chosen web server
