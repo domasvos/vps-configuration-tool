@@ -45,8 +45,6 @@ install_opencart() {
     # Set proper permissions on the OpenCart directory
     chown -R www-data:www-data /var/www/html/opencart$i/
     chmod -R 755 /var/www/html/opencart$i/
-    chmod 0777 /var/www/html/opencart$i/config.php
-    chmod 0777 /var/www/html/opencart$i/admin/config.php
 }
 
 configure_database() {
@@ -65,15 +63,23 @@ configure_database() {
 
 configure_config() {
 
-    # Updating main config file
-    sudo sed -i "s/localhost/$dbname/" /var/www/html/opencart$i/config.php
-    sudo sed -i "s/username/$dbuser/" /var/www/html/opencart$i/config.php
-    sudo sed -i "s/password/$dbpass/" /var/www/html/opencart$i/config.php
+    # Setup config files
+    mv /var/www/html/opencart$i/config-dist.php /var/www/html/opencart$i/config.php
+    mv /var/www/html/opencart$i/admin/config-dist.php /var/www/html/opencart$i/admin/config.php
 
-    # Updating admin config file
-    sudo sed -i "s/localhost/$dbname/" /var/www/html/opencart$i/admin/config.php
-    sudo sed -i "s/username/$dbuser/" /var/www/html/opencart$i/admin/config.php
-    sudo sed -i "s/password/$dbpass/" /var/www/html/opencart$i/admin/config.php
+    # # Updating main config file
+    # sudo sed -i "s/localhost/$dbname/" /var/www/html/opencart$i/config.php
+    # sudo sed -i "s/username/$dbuser/" /var/www/html/opencart$i/config.php
+    # sudo sed -i "s/password/$dbpass/" /var/www/html/opencart$i/config.php
+
+    # # Updating admin config file
+    # sudo sed -i "s/localhost/$dbname/" /var/www/html/opencart$i/admin/config.php
+    # sudo sed -i "s/username/$dbuser/" /var/www/html/opencart$i/admin/config.php
+    # sudo sed -i "s/password/$dbpass/" /var/www/html/opencart$i/admin/config.php
+
+    # Set correct permissions
+    chmod 0777 /var/www/html/opencart$i/config.php
+    chmod 0777 /var/www/html/opencart$i/admin/config.php
     
 }
 
