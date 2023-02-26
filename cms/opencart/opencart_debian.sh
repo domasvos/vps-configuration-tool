@@ -10,6 +10,14 @@ prerequisites() {
 }
 
 check_installed() {
+
+    # Install software-properties-common to help manage distributions and independent software source
+    sudo apt install -y software-properties-common
+
+    # Add the ondrej/php PPA which provides different PHP versions
+    echo | sudo add-apt-repository ppa:ondrej/php
+    sudo apt update
+
     if ! [ -x "$(command -v "$1")" ]; then
         apt-get install -y "$1" > /dev/null 2>&1
         echo "$1 installed successfully"
@@ -22,6 +30,7 @@ check_installed() {
 for dep in "${deps[@]}"
 do
     check_installed "$dep"
+    # Need to install php8.1 for opencart 4, need to install php8.1-curl, php8.1-mbstring, php8.1-gd, php8.1-zip, php8.1-mysql
 done
 
 install_opencart() {
@@ -66,16 +75,6 @@ configure_config() {
     # Setup config files
     mv /var/www/html/opencart$i/config-dist.php /var/www/html/opencart$i/config.php
     mv /var/www/html/opencart$i/admin/config-dist.php /var/www/html/opencart$i/admin/config.php
-
-    # # Updating main config file
-    # sudo sed -i "s/localhost/$dbname/" /var/www/html/opencart$i/config.php
-    # sudo sed -i "s/username/$dbuser/" /var/www/html/opencart$i/config.php
-    # sudo sed -i "s/password/$dbpass/" /var/www/html/opencart$i/config.php
-
-    # # Updating admin config file
-    # sudo sed -i "s/localhost/$dbname/" /var/www/html/opencart$i/admin/config.php
-    # sudo sed -i "s/username/$dbuser/" /var/www/html/opencart$i/admin/config.php
-    # sudo sed -i "s/password/$dbpass/" /var/www/html/opencart$i/admin/config.php
 
     # Set correct permissions
     chmod 0777 /var/www/html/opencart$i/config.php
