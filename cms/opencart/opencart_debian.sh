@@ -45,8 +45,8 @@ install_opencart() {
     # Set proper permissions on the OpenCart directory
     chown -R www-data:www-data /var/www/html/opencart$i/
     chmod -R 755 /var/www/html/opencart$i/
-    chmod 0777 config.php
-    chmod 0777 admin/config.php
+    chmod 0777 /var/www/html/opencart$i/config.php
+    chmod 0777 /var/www/html/opencart$i/admin/config.php
 }
 
 configure_database() {
