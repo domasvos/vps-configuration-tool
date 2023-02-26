@@ -1,12 +1,19 @@
 #!/bin/bash
 
-
-# Dependancies
-deps=("libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip")
-
 prerequisites() {
     echo "Making sure system is up to date..."
     apt-get update > /dev/null 2>&1 && apt-get upgrade -y > /dev/null 2>&1
+}
+
+check_modules() {
+    # Dependancies
+    deps=("libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip")
+
+    for dep in "${deps[@]}"
+    do
+        check_installed "$dep"
+        # Need to install php8.1 for opencart 4, need to install php8.1-curl, php8.1-mbstring, php8.1-gd, php8.1-zip, php8.1-mysql
+    done
 }
 
 check_installed() {
@@ -26,12 +33,6 @@ check_installed() {
         echo "$1 is already installed"
     fi
 }
-
-for dep in "${deps[@]}"
-do
-    check_installed "$dep"
-    # Need to install php8.1 for opencart 4, need to install php8.1-curl, php8.1-mbstring, php8.1-gd, php8.1-zip, php8.1-mysql
-done
 
 install_opencart() {
 
@@ -114,4 +115,4 @@ EOF
     sudo service apache2 restart
 }
 
-prerequisites && check_installed && install_opencart && configure_database && configure_config && configure_apache
+prerequisites && check_modules && install_opencart && configure_database && configure_config && configure_apache
