@@ -39,11 +39,14 @@ install_opencart() {
 
     # Extract OpenCart to the document root of your Apache web server
     unzip -q /tmp/opencart-$latest.zip -d /var/www/html/
-    mv /var/www/html/opencart-$latest /var/www/html/opencart$i
+    mv /var/www/html/opencart-$latest/upload /var/www/html/opencart$i
+    rm -rf /tmp/opencart-$latest.zip
 
     # Set proper permissions on the OpenCart directory
     chown -R www-data:www-data /var/www/html/opencart$i/
     chmod -R 755 /var/www/html/opencart$i/
+    chmod 0777 config.php
+    chmod 0777 admin/config.php
 }
 
 configure_database() {
