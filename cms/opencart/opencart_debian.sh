@@ -7,7 +7,7 @@ prerequisites() {
 
 check_modules() {
     # Dependancies
-    deps=("libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip")
+    deps=("libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip")
 
     for dep in "${deps[@]}"
     do
@@ -115,4 +115,13 @@ EOF
     sudo service apache2 restart
 }
 
-prerequisites && check_modules && install_opencart && configure_database && configure_config && configure_apache
+finalizing() {
+    ip_address=$(hostname -I | awk '{print $2}')
+    echo "You can access your website on http://$ip_address:$port"
+    echo "You will need to setup your database in the website, here are your website details:\n"
+    echo "Database Name: $dbname"
+    echo "Database Username: $dbuser"
+    echo "Database Password: $dbpass"
+}
+
+prerequisites && check_modules && install_opencart && configure_database && configure_config && configure_apache && finalizing
