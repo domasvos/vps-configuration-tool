@@ -50,7 +50,7 @@ install_opencart() {
     # Extract OpenCart to the document root of your Apache web server
     unzip -q /tmp/opencart-$latest.zip -d /var/www/html/
     mv /var/www/html/opencart-$latest/upload /var/www/html/opencart$i
-    rm -rf /tmp/opencart-$latest.zip
+    rm -rf /tmp/opencart-$latest.zip && rm -rf /var/www/html/opencart-$latest
 
     # Set proper permissions on the OpenCart directory
     chown -R www-data:www-data /var/www/html/opencart$i/
@@ -105,6 +105,7 @@ configure_apache() {
         ServerName opencart$i
         <Directory /var/www/html/opencart$i>
             AllowOverride All
+            php_admin_value version 8.1
         </Directory>
         ErrorLog \${APACHE_LOG_DIR}/error.log
         CustomLog \${APACHE_LOG_DIR}/access.log combined
