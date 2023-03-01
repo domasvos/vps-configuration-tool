@@ -6,6 +6,14 @@ prerequisites() {
 }
 
 check_modules() {
+
+    # Install software-properties-common to help manage distributions and independent software source and necessary packages to access repository
+    sudo apt-get install curl wget gnupg2 ca-certificates lsb-release apt-transport-https -y > /dev/null 2>&1
+    sudo apt install -y software-properties-common > /dev/null 2>&1
+
+    # Add the ondrej/php PPA which provides different PHP versions
+    echo | sudo add-apt-repository ppa:ondrej/php
+    sudo apt update -y
     # Dependancies
     deps=("libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-fpm")
 
@@ -17,14 +25,6 @@ check_modules() {
 }
 
 check_installed() {
-
-    # Install software-properties-common to help manage distributions and independent software source and necessary packages to access repository
-    sudo apt-get install curl wget gnupg2 ca-certificates lsb-release apt-transport-https -y > /dev/null 2>&1
-    sudo apt install -y software-properties-common > /dev/null 2>&1
-
-    # Add the ondrej/php PPA which provides different PHP versions
-    echo | sudo add-apt-repository ppa:ondrej/php
-    sudo apt update -y
 
     if ! [ -x "$(command -v "$1")" ]; then
         apt-get install -y "$1" > /dev/null 2>&1
