@@ -36,6 +36,8 @@ check_modules() {
     else
         echo "proxy_fcgi_module already enabled"
     fi
+
+    rm -rf /etc/apt/sources.list.d/ondrej-*
 }
 
 check_installed() {
