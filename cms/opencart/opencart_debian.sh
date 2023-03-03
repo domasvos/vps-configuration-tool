@@ -2,14 +2,14 @@
 
 prerequisites() {
     echo "Making sure system is up to date..."
-    apt-get update > /dev/null 2>&1 && apt-get upgrade -y > /dev/null 2>&1
+    apt-get update  && apt-get upgrade -y 
 }
 
 check_modules() {
 
     # Install software-properties-common to help manage distributions and independent software source and necessary packages to access repository
-    sudo apt-get install curl wget gnupg2 ca-certificates lsb-release apt-transport-https -y > /dev/null 2>&1
-    yes | sudo apt install -y software-properties-common > /dev/null 2>&1
+    sudo apt-get install curl wget gnupg2 ca-certificates lsb-release apt-transport-https -y 
+    yes | sudo apt install -y software-properties-common 
 
     # Add the ondrej/php PPA which provides different PHP versions
     echo | sudo add-apt-repository ppa:ondrej/php
@@ -41,7 +41,7 @@ check_modules() {
 check_installed() {
 
     if ! [ -x "$(command -v "$1")" ]; then
-        apt-get install -y "$1" > /dev/null 2>&1
+        apt-get install -y "$1" 
         echo "$1 installed successfully"
         
     else
