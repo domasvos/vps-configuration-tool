@@ -9,7 +9,7 @@ check_modules() {
 
     # Install software-properties-common to help manage distributions and independent software source and necessary packages to access repository
     sudo apt-get install curl wget gnupg2 ca-certificates lsb-release apt-transport-https -y 
-    yes | sudo apt install -y software-properties-common 
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common 
 
     # Add the ondrej/php PPA which provides different PHP versions
     echo | sudo add-apt-repository ppa:ondrej/php
