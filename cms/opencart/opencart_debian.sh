@@ -9,19 +9,27 @@ check_modules() {
 
     # Install software-properties-common to help manage distributions and independent software source and necessary packages to access repository
     sudo apt-get install curl wget gnupg2 ca-certificates lsb-release apt-transport-https -y > /dev/null 2>&1
-    sudo apt install -y software-properties-common > /dev/null 2>&1
+    yes | sudo apt install -y software-properties-common > /dev/null 2>&1
 
     # Add the ondrej/php PPA which provides different PHP versions
     echo | sudo add-apt-repository ppa:ondrej/php
     sudo apt update -y
     # Dependancies
-    deps=("libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-fpm")
+    deps=("mariadb-server" "libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-fpm")
 
     for dep in "${deps[@]}"
     do
         check_installed "$dep"
         # Need to install php8.1 for opencart 4, need to install php8.1-curl, php8.1-mbstring, php8.1-gd, php8.1-zip, php8.1-mysql
     done
+
+    if ! apachectl -t -D DUMP_MODULES | grep -q "proxy_fcgi_module"; then
+        # Enable the module
+        sudo a2enmod -q actions fcgid alias proxy_fcgi
+        echo "proxy_fcgi_module enabled."
+    else
+        echo "proxy_fcgi_module already enabled"
+    fi
 }
 
 check_installed() {
@@ -33,8 +41,6 @@ check_installed() {
     else
         echo "$1 is already installed"
     fi
-
-    sudo a2enmod actions fcgid alias proxy_fcgi > /dev/null 2>&1
 }
 
 install_opencart() {
@@ -125,7 +131,7 @@ EOF
 finalizing() {
     ip_address=$(hostname -I | awk '{print $2}')
     echo "You can access your website on http://$ip_address:$port"
-    echo "You will need to setup your database in the website, here are your website details:\n"
+    echo "You will need to setup your database in the website, here are your website details:"
     echo "Database Name: $dbname"
     echo "Database Username: $dbuser"
     echo "Database Password: $dbpass"
