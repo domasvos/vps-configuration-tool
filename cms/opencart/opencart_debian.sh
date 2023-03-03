@@ -14,6 +14,12 @@ check_modules() {
     # Add the ondrej/php PPA which provides different PHP versions
     echo | sudo add-apt-repository ppa:ondrej/php
     sudo apt update -y
+
+    wget https://packages.sury.org/php/apt.gpg && apt-key add apt.gpg
+    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
+    apt-get upgrade -y
+    apt-get update
+
     # Dependancies
     deps=("mariadb-server" "libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-fpm")
 
