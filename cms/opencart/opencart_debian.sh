@@ -40,6 +40,7 @@ check_modules() {
     fi
 
     rm -rf /etc/apt/sources.list.d/ondrej-*
+    rm -rf /etc/apt/sources.list.d/php.list
 }
 
 check_installed() {

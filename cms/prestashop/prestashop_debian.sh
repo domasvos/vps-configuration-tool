@@ -14,10 +14,14 @@ check_modules() {
     # Dependancies
     deps=("mariadb-server" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl")
 
-    for dep in "${deps[@]}"
-    do
-        check_installed "$dep"
-    done
+    if ! which php >/dev/null 2>&1; then 
+        for dep in "${deps[@]}"
+        do
+            check_installed "$dep"
+        done
+    else
+        echo "PHP Already installed"
+    fi
 
     if ! which composer >/dev/null 2>&1; then
         install_composer
