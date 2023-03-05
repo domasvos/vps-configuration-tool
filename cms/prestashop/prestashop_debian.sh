@@ -80,15 +80,15 @@ install_presta() {
     mv /var/www/html/PrestaShop-$latest /var/www/html/prestashop$i
     rm -rf /tmp/prestashop-$latest.zip
 
-    # Set proper permissions on the prestashop directory
-    chown -R www-data:www-data /var/www/html/prestashop$i/
-
     # Use Composer to Download project's dependencies
     composer install -d /var/www/html/prestashop$i/ -n
 
     # Use NPM to create project's assets
     echo "This might take a while..."
     make assets -C /var/www/html/prestashop$i/ 
+
+    # Set proper permissions on PrestaShop folder
+    chown -R www-data:www-data /var/www/html/prestashop$i/
 }
 
 configure_apache() {
