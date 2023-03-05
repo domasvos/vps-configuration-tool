@@ -84,7 +84,7 @@ install_presta() {
     chown -R www-data:www-data /var/www/html/prestashop$i/
 
     # Use Composer to Download project's dependencies
-    composer /var/www/html/prestashop$i/ -n
+    composer install -d /var/www/html/prestashop$i/ -n
 
     # Use NPM to create project's assets
     echo "This might take a while..."
