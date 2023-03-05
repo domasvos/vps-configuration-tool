@@ -18,7 +18,19 @@ check_modules() {
     do
         check_installed "$dep"
     done
-    
+
+    if ! which composer >/dev/null 2>&1; then
+        install_composer
+    else
+        echo "Composer already installed"
+    fi
+
+    if ! which npm >/dev/null 2>&1; then
+        install_npm
+    else
+        echo "npm already installed"
+    fi
+
 }
 
 check_installed() {
@@ -30,6 +42,20 @@ check_installed() {
     else
         echo "$1 is already installed"
     fi
+}
+
+install_composer() {
+
+    # Install Composer globally, necessary for PrestaShop
+    curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+    HASH='curl -sS https://composer.github.io/installer.sig'
+    php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+    sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+}
+
+install_npm() {
+
+    sudo apt install -y nodejs npm
 }
 
 install_presta() {
@@ -47,12 +73,18 @@ install_presta() {
 
     # Extract prestashop to the document root of your Apache web server
     unzip -q /tmp/prestashop-$latest.zip -d /var/www/html/
-    mv /var/www/html/prestashop-$latest /var/www/html/prestashop$i
+    mv /var/www/html/PrestaShop-$latest /var/www/html/prestashop$i
     rm -rf /tmp/prestashop-$latest.zip
 
     # Set proper permissions on the prestashop directory
     chown -R www-data:www-data /var/www/html/prestashop$i/
-    chmod -R 755 /var/www/html/prestashop$i/
+
+    # Use Composer to Download project's dependencies
+    composer /var/www/html/prestashop$i/ -n
+
+    # Use NPM to create project's assets
+    echo "This might take a while..."
+    make assets -C /var/www/html/prestashop$i/ 
 }
 
 configure_apache() {
@@ -84,5 +116,8 @@ configure_apache() {
 EOF
     echo -e "\n# Added by Opti-Tool PrestaShop installation\nListen $port" >> /etc/apache2/ports.conf
     sudo a2ensite prestashop$i
+    sudo a2enmod rewrite
     sudo service apache2 restart
 }
+
+prerequisites && check_modules && install_presta && configure_apache
