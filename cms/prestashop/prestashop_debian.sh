@@ -40,6 +40,7 @@ check_modules() {
 
     # Check if MySQL does not exist, if not - install it.
     if ! which mysql >/dev/null 2>&1; then 
+        echo "Installing MariaDB"
         sudo apt-get install -y mariadb-server
     else
         echo "MySQL is already installed"
