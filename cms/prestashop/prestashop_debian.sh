@@ -12,8 +12,9 @@ check_modules() {
     sudo apt update -y
 
     # Dependancies
-    deps=("mariadb-server" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl")
+    deps=("libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl")
 
+    # Check if PHP does not exist, if not - install it
     if ! which php >/dev/null 2>&1; then 
         for dep in "${deps[@]}"
         do
@@ -23,16 +24,25 @@ check_modules() {
         echo "PHP Already installed"
     fi
 
+    # Check if Composer does not exist, if not - install it
     if ! which composer >/dev/null 2>&1; then
         install_composer
     else
         echo "Composer already installed"
     fi
 
+    # Check if NPM does not exist, if not - install it
     if ! which npm >/dev/null 2>&1; then
         install_npm
     else
         echo "npm already installed"
+    fi
+
+    # Check if MySQL does not exist, if not - install it.
+    if ! which mysql >/dev/null 2>&1; then 
+        sudo apt-get install -y mariadb-server
+    else
+        echo "MySQL is already installed"
     fi
 
 }
@@ -91,6 +101,22 @@ install_presta() {
     chown -R www-data:www-data /var/www/html/prestashop$i/
 }
 
+configure_database() {
+
+    # Ask for database variables
+    read -p "Enter a name for the new database: " dbname
+    read -p "Enter a username for the new database: " dbuser
+    read -p "Enter a password for the new database: " dbpass
+
+    # Setup database for OpenCart
+    mysql -u root -e "CREATE DATABASE $dbname;"
+    mysql -u root -e "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
+    mysql -u root -e "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';"
+    mysql -u root -e "FLUSH PRIVILEGES;"
+}
+
+# Adding choice to configure website on Port or Full domain
+
 configure_apache() {
 
     read -p "Enter the desired port number [default 80][0 - 65535]: " port
@@ -124,4 +150,13 @@ EOF
     sudo service apache2 restart
 }
 
-prerequisites && check_modules && install_presta && configure_apache
+finalizing() {
+    ip_address=$(hostname -I | awk '{print $2}')
+    echo "You can access your website on http://$ip_address:$port"
+    echo "You will need to setup your database in the website, here are your website details:"
+    echo "Database Name: $dbname"
+    echo "Database Username: $dbuser"
+    echo "Database Password: $dbpass"
+}
+
+prerequisites && check_modules && install_presta && configure_apache && configure_database && finalizing
