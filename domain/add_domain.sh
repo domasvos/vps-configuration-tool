@@ -20,7 +20,7 @@ fi
 sudo sed -i "s/#ServerName/ServerName $domain/" "/etc/apache2/sites-available/$conf_file.conf"
 
 # Change the port to 80 in the .conf file
-sudo sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:80>/" "/etc/apache2/sites-available/$conf_file.conf"lable/$conf_file.conf"
+sudo sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:80>/" "/etc/apache2/sites-available/$conf_file.conf"
 
 # Restart the Apache web server
 sudo systemctl restart apache2
