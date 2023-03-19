@@ -17,7 +17,7 @@ if [ ! -f "/etc/apache2/sites-available/$conf_file.conf" ]; then
 fi
 
 # Add the ServerName directive to the .conf file
-sudo sed -i "s/#ServerName/ServerName $domain/" "/etc/apache2/sites-available/$conf_file.conf"
+sudo sed -i "s/ServerName .*/ServerName $domain/" "/etc/apache2/sites-available/$conf_file.conf"
 
 # Change the port to 80 in the .conf file
 sudo sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:80>/" "/etc/apache2/sites-available/$conf_file.conf"
