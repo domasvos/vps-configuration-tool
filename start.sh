@@ -3,10 +3,10 @@
 get_web_server() {
     if command -v apache2 > /dev/null; then
         echo "Apache"
+        web_server="apache"
     elif command -v nginx > /dev/null; then
         echo "Nginx"
-    elif command -v lighttpd > /dev/null; then
-        echo "Lighttpd"
+        web_server="nginx"
     else
         echo "N/A"
     fi
@@ -71,7 +71,8 @@ echo "
     echo "Please choose an option:"
     echo "1. Install CyberPanel"
     echo "2. Install Content Management System"
-    echo "3. Exit"
+    echo "3. Set Domain name for website"
+    echo "4. Exit"
 
     # Read in the user's selection
     read -p "Enter your choice: " choice
@@ -96,14 +97,20 @@ menu() {
             else
                 # Return to the options menu
                 vps_information
-		        menu
+                        menu
             fi
             ;;
         2)
             bash cms/select_cms.sh
             ;;
-
         3)
+            if [[ $web_server == "Apache" ]]; then
+                bash domain/add_domain.sh
+            else
+                echo $web_server
+            fi
+            ;;
+        4)
             # Exit the script
             run=false
             ;;

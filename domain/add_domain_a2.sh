@@ -1,7 +1,25 @@
 #!/bin/bash
 
+function check_domain_exists {
+  for file in /etc/apache2/sites-available/*.conf; do
+    if grep -q "ServerName $1" "$file"; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # Ask the user for a domain name
-read -p "Enter the domain name: " domain
+while true; do
+  read -p "Enter the domain name: " domain
+
+  if check_domain_exists "$domain"; then
+    echo "The domain $domain is already attached to another website."
+    echo "Please remove the domain manually or enter a new one."
+  else
+    break
+  fi
+done
 
 # List all .conf files in the apache/sites-available directory
 echo "Available websites' files:"
