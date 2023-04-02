@@ -48,10 +48,13 @@ generate_keys() {
 
 # Function to configure the database for WordPress
 configure_database() {
-    if [ -x "$(command -v mariadb)" ]; then
-        echo "MariaDB is installed"
+    if ! [ -x "$(command -v mysql)" ]; then
+        echo "No database engine found. Installing MariaDB..."
+        sudo yum install -y mariadb-server
+        sudo systemctl enable mariadb
+        sudo systemctl start mariadb
     else
-        check_installed "mariadb-server"
+        echo "A database engine is already installed."
     fi
     read -p "Enter WordPress database username: " wpuser
     read -p "Enter WordPress database password: " wppass
@@ -59,12 +62,13 @@ configure_database() {
     sudo mysql -e "CREATE DATABASE $DBNAME DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
     sudo mysql -e "GRANT ALL ON $DBNAME.* TO '$wpuser'@'localhost' IDENTIFIED BY '$wppass';"
     sudo mysql -e "FLUSH PRIVILEGES;"
-    sudo -u apache cp -r "/srv/www/wordpress$i/wp-config-sample.php" "/srv/www/wordpress$i/wp-config.php"
-    sudo -u apache sed -i "s/database_name_here/$DBNAME/" "/srv/www/wordpress$i/wp-config.php"
-    sudo -u apache sed -i "s/username_here/$wpuser/" "/srv/www/wordpress$i/wp-config.php"
-    sudo -u apache sed -i "s/password_here/$wppass/" "/srv/www/wordpress$i/wp-config.php"
+    sudo -u apache cp -r "/var/www/html/wordpress$i/wp-config-sample.php" "/var/www/html/wordpress$i/wp-config.php"
+    sudo -u apache sed -i "s/database_name_here/$DBNAME/" "/var/www/html/wordpress$i/wp-config.php"
+    sudo -u apache sed -i "s/username_here/$wpuser/" "/var/www/html/wordpress$i/wp-config.php"
+    sudo -u apache sed -i "s/password_here/$wppass/" "/var/www/html/wordpress$i/wp-config.php"
     generate_keys
 }
+
 
 # Function to configure WordPress for the chosen web server
 configure_webserver() {
