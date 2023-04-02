@@ -4,6 +4,7 @@
 check_installed() {
     if ! [ -x "$(command -v "$1")" ]; then
         sudo yum install -y "$1" > /dev/null 2>&1
+        systemctl start "$1"
     else
         echo "$1 is already installed"
     fi
@@ -96,8 +97,8 @@ configure_apache() {
         <Directory /var/www/html/wordpress$i>
             AllowOverride All
         </Directory>
-        ErrorLog \${APACHE_LOG_DIR}/error.log
-        CustomLog \${APACHE_LOG_DIR}/access.log combined
+        ErrorLog /var/log/httpd/error.log
+        CustomLog /var/log/httpd/access.log combined
 </VirtualHost>
 EOF
     echo -e "\n# Added by Opti-Tool WordPres installation\nListen $port" >> /etc/httpd/conf/httpd.conf
