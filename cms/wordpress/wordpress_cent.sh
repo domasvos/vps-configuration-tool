@@ -119,6 +119,12 @@ finalizing() {
     echo "Database Password: $dbpass"
 }
 
+# Install EPEL repository
+sudo yum install -y epel-release
+# Install Remi repository
+sudo yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+sudo yum-config-manager --enable remi-modular
+
 # Check and install dependencies
 deps=("ghostscript" "httpd" "php" "php-bcmath" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-xml" "php-zip" "openssl")
 for dep in "${deps[@]}"
