@@ -32,7 +32,6 @@ echo "
       |_|
 
 -----------------------------------------------------"
-
     # Set the text color to gold
     echo -e "\033[33m"
 
@@ -101,13 +100,15 @@ menu() {
             fi
             ;;
         2)
-            bash cms/select_cms.sh
+            bash "$(pwd)/cms/select_cms.sh"
             ;;
         3)
             if [[ $web_server == "Apache" ]]; then
-                bash domain/add_domain.sh
+                bash "$(pwd)/domain/add_domain_a2.sh"
+            elif [[ $web_server == "Nginx" ]]; then
+                bash "$(pwd)/domain/add_domain_ng.sh"
             else
-                echo $web_server
+                echo "Install Apache or Nginx web server"
             fi
             ;;
         4)
