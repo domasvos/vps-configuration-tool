@@ -37,6 +37,29 @@ install_wordpress() {
     sudo chown -R apache:apache /var/www/html/wordpress$i
 }
 
+# Function to install and configure PHP
+install_php() {
+    # Detect the OS version
+    os_version=$(rpm -E %{rhel})
+
+    # Install EPEL repository for older systems
+    if [ "$os_version" -le 7 ]; then
+      sudo yum install -y epel-release
+    fi
+
+    # Install required dependencies
+    sudo yum install -y yum-utils
+
+    # Install Remi repository
+    sudo yum install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
+
+    # Enable the desired PHP version (e.g., PHP 8.0)
+    sudo yum-config-manager --enable remi-php80
+
+    # Install PHP and necessary extensions
+    sudo yum install -y php php-{bcmath,curl,gd,intl,json,mbstring,mysqlnd,xml,zip}
+}
+
 generate_keys() {
   for key in "AUTH_KEY" "SECURE_AUTH_KEY" "LOGGED_IN_KEY" "NONCE_KEY" "AUTH_SALT" "SECURE_AUTH_SALT" "LOGGED_IN_SALT" "NONCE_SALT"; do
     # Generate a random 64-character string
@@ -69,7 +92,6 @@ configure_database() {
     sudo -u apache sed -i "s/password_here/$wppass/" "/var/www/html/wordpress$i/wp-config.php"
     generate_keys
 }
-
 
 # Function to configure WordPress for the chosen web server
 configure_webserver() {
@@ -107,6 +129,7 @@ configure_apache() {
 </VirtualHost>
 EOF
     echo -e "\n# Added by Opti-Tool WordPres installation\nListen $port" >> /etc/httpd/conf/httpd.conf
+    sudo mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.bak > /dev/null 2>&1
     sudo systemctl restart httpd
 }
 
@@ -119,12 +142,6 @@ finalizing() {
     echo "Database Password: $dbpass"
 }
 
-# Install EPEL repository
-sudo yum install -y epel-release
-# Install Remi repository
-sudo yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
-sudo yum-config-manager --enable remi-modular
-
 # Check and install dependencies
 deps=("ghostscript" "httpd" "php" "php-bcmath" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-xml" "php-zip" "openssl")
 for dep in "${deps[@]}"
@@ -132,4 +149,4 @@ do
     check_installed "$dep"
 done
 
-check_webserver && install_wordpress && configure_database && configure_webserver && configure_apache && finalizing
+check_webserver && install_wordpress && install_php && configure_database && configure_webserver && configure_apache && finalizing
