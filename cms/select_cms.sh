@@ -1,13 +1,13 @@
 #!/bin/bash
 
 selectCms() {
-
-    echo "Select which Content Management System you wish to install [enter the number of the choice]: "
-    echo $(pwd)
-    echo "1. WordPress"
-    echo "2. PrestaShop"
-    echo "3. OpenCart"
-    echo "6. exit"
+    clear
+    echo -e "\033[33mSelect which Content Management System you wish to install (1-4): \033[0m" && sleep 0.3
+    echo -e "1. \033[94mWordPress\033[0m" && sleep 0.1
+    echo -e "2. \033[34mPresta\033[35mShop\033[0m" && sleep 0.1
+    echo -e "3. \033[38;5;39mOpenCart\033[0m" && sleep 0.1
+    echo -e "4. \033[31mExit X\033[0m"
+    
     read -p "Enter the number of the CMS you wish to install: " choice
 
     case $choice in
@@ -24,11 +24,11 @@ selectCms() {
             echo "You chose OpenCart"
             bash "$(pwd)/cms/opencart/opencart_debian.sh"
             ;;
-        6)
+        4)
             run=false
             ;;
         *)
-            echo "This choice does not exist, try again"
+            echo -e "\033[31mInvalid input. Please enter a number between 1 and 4.\033[0m"
     esac
 }
 
