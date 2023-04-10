@@ -50,6 +50,7 @@ vps_information() {
     disk_usage=$(df -h | awk 'NR==2{print $3 " / " $2}')
     ram_usage=$(free -h | awk 'NR==2{print $3 " / " $2}')
     cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "%.1f%% / 100%%", usage}')
+    ip_address=$(hostname -I | awk '{print $2}')
 
     # Print table header
     printf "+--------------------+--------------------------+\n"
@@ -58,6 +59,7 @@ vps_information() {
 
     # Print table rows with blinking values
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Linux distro" "${distro_name} ${distro_version}" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Machine IP Address" "${ip_address}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Web Server" "${web_server}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Disk Usage" "${disk_usage}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "RAM Memory Usage" "${ram_usage}" && sleep 0.1
@@ -70,10 +72,11 @@ menu() {
     while true; do
         # Display the options menu
         echo -e "\033[1m\033[36mPlease choose an option:\033[0m"
-        echo -e "\033[32m1. Install CyberPanel"
-        echo -e "2. Select and Install a CMS"
-        echo -e "3. Add a Domain"
-        echo -e "4. Exit\033[0m"
+        echo -e "\033[32m1. Install Content Management System"
+        echo -e "2. Configure a domain for a website"
+        echo -e "3. Configure a file browser"
+        echo -e "4. Configure SSL certificate"
+        echo -e "5. Exit\033[0m"
         
         # Get the user's choice
         read -p "Enter the number of your choice (1-4): " choice
@@ -81,24 +84,9 @@ menu() {
         # Handle the user's selection
         case $choice in
             1)
-                # Display the necessary requirements for CyberPanel
-                echo -e "\033[31mPython is necessary and will be installed."
-                echo -e "CyberPanel requires at least 1024MB of Ram memory."
-                echo -e "CyberPanel requires at least 10GB of free disk space.\033[0m"
-
-                # Ask the user if they still want to install CyberPanel
-                read -p "Do you want to install CyberPanel (y/N)? " install_cyberpanel
-                if [[ $install_cyberpanel =~ ^[Yy]$ ]]; then
-                    bash install_cyberpanel.sh
-                else
-                    # Return to the options menu
-                    continue
-                fi
-                ;;
-            2)
                 bash "$(pwd)/cms/select_cms.sh"
                 ;;
-            3)
+            2)
                 if [[ $web_server == "Apache" ]]; then
                     bash "$(pwd)/domain/add_domain_a2.sh"
                 elif [[ $web_server == "Nginx" ]]; then
@@ -107,7 +95,13 @@ menu() {
                     echo "Install Apache or Nginx web server"
                 fi
                 ;;
-            4)
+            3)
+                echo "Installing file browser"
+                ;;
+            4) 
+                echo "Domain must be pointed to IP Address and"
+                ;;
+            5)
                 # Exit the script
                 break
                 ;;
