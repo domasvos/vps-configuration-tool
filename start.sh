@@ -58,7 +58,7 @@ vps_information() {
     printf "+--------------------+--------------------------+\n"
 
     # Print table rows with blinking values
-    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Linux distro" "${distro_name} ${distro_version}" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Linux distribution" "${distro_name} ${distro_version}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Machine IP Address" "${ip_address}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Web Server" "${web_server}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Disk Usage" "${disk_usage}" && sleep 0.1
