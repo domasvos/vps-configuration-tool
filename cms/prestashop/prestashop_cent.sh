@@ -41,7 +41,7 @@ check_modules() {
     $PACKAGE_MANAGER update -y
 
     # Dependencies
-    deps=("httpd" "php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc" "nodejs")
+    deps=("httpd" "php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
 
     for dep in "${deps[@]}"
     do
@@ -54,8 +54,8 @@ check_modules() {
         echo "Composer already installed"
     fi
 
-    if ! which npm >/dev/null 2>&1; then
-        install_npm
+    if ! which node >/dev/null 2>&1; then
+        install_node
     else
         echo "npm already installed"
     fi
@@ -88,13 +88,9 @@ install_composer() {
     sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 }
 
-install_npm() {
-    if [ "$PACKAGE_MANAGER" == "dnf" ]; then
-        dnf install -y nodejs
-    elif [ "$PACKAGE_MANAGER" == "yum" ]; then
-        curl -sL https://rpm.nodesource.com/setup_16.x | bash -
-        yum install -y nodejs
-    fi
+install_node() {
+    curl -sL https://rpm.nodesource.com/setup_16.x | bash -
+    $PACKAGE_MANAGER install -y nodejs
 }
 
 install_presta() {
@@ -116,7 +112,7 @@ install_presta() {
     sudo rm -rf /tmp/prestashop-$latest.zip
 
     # Use Composer to Download project's dependencies
-    composer install -d /var/www/html/prestashop$i/ -n
+    COMPOSER_ALLOW_SUPERUSER=1 composer install -d /var/www/html/prestashop$i/ -n
 
     # Use NPM to create project's assets
     cd /var/www/html/prestashop$i/
