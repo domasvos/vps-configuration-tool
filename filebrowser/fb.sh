@@ -76,12 +76,7 @@ main() {
     echo "Enter the root folder for File Browser (default: /var/www/html):"
     read -r root_folder
 
-    update_system
-    install_filebrowser
-    enable_port
-    create_configuration "${root_folder:-/var/www/html}"
-    create_service
-    enable_service
+    update_system && install_filebrowser && enable_port && create_configuration "${root_folder:-/var/www/html}" && create_service && enable_service
 
     echo "You can access your filebrowser here http://$ip_address:8080"
 }
