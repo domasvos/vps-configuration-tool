@@ -18,7 +18,7 @@ install_filebrowser() {
 }
 
 create_configuration() {
-    local ip_address=$(hostname -I | awk '{if ($1 != "127.0.0.1") {print $1} else {print $2}}')
+    ip_address=$(hostname -I | awk '{if ($1 != "127.0.0.1") {print $1} else {print $2}}')
     local root_folder=${1:-/var/www/html}
 
     cat > /etc/filebrowser.json <<EOF
@@ -78,7 +78,7 @@ main() {
 
     update_system && install_filebrowser && enable_port && create_configuration "${root_folder:-/var/www/html}" && create_service && enable_service
 
-    echo "You can access your filebrowser here http://$ip_address:8080"
+    echo "You can access your filebrowser here http://$ip_address:$port"
 }
 
 main
