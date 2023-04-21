@@ -84,7 +84,7 @@ menu() {
         # Handle the user's selection
         case $choice in
             1)
-                bash "$(pwd)/cms/select_cms.sh"
+                bash "cms/select_cms.sh"
                 ;;
             2)
                 if [[ $web_server == "Apache" ]]; then
@@ -97,6 +97,7 @@ menu() {
                 ;;
             3)
                 echo "Installing file browser"
+                bash "filebrowser/fb.sh" $web_server
                 ;;
             4) 
                 echo "Domain must be pointed to IP Address and"
