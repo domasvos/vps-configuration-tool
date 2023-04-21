@@ -2,11 +2,9 @@
 
 get_web_server() {
     if command -v apache2 > /dev/null || command -v httpd > /dev/null; then
-        echo "Apache"
-        web_server="apache"
+        echo "apache"
     elif command -v nginx > /dev/null; then
-        echo "Nginx"
-        web_server="nginx"
+        echo "nginx"
     else
         echo "N/A"
     fi
@@ -46,11 +44,11 @@ vps_information() {
     # Collect system information
     distro_name=$(grep '^NAME=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
     distro_version=$(grep '^VERSION_ID=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
-    web_server=$(get_web_server)
     disk_usage=$(df -h | awk 'NR==2{print $3 " / " $2}')
     ram_usage=$(free -h | awk 'NR==2{print $3 " / " $2}')
     cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "%.1f%% / 100%%", usage}')
     ip_address=$(hostname -I | awk '{print $2}')
+    web_server=$(get_web_server)
 
     # Print table header
     printf "+--------------------+--------------------------+\n"
@@ -60,7 +58,7 @@ vps_information() {
     # Print table rows with blinking values
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Linux distribution" "${distro_name} ${distro_version}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Machine IP Address" "${ip_address}" && sleep 0.1
-    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Web Server" "${web_server}" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Web Server" "$(echo "${web_server^}")" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Disk Usage" "${disk_usage}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "RAM Memory Usage" "${ram_usage}" && sleep 0.1
     printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "CPU Usage" "${cpu_usage}" && sleep 0.1
@@ -87,9 +85,9 @@ menu() {
                 bash "cms/select_cms.sh"
                 ;;
             2)
-                if [[ $web_server == "Apache" ]]; then
+                if [[ $web_server == "apache" ]]; then
                     bash "$(pwd)/domain/add_domain_a2.sh"
-                elif [[ $web_server == "Nginx" ]]; then
+                elif [[ $web_server == "nginx" ]]; then
                     bash "$(pwd)/domain/add_domain_ng.sh"
                 else
                     echo "Install Apache or Nginx web server"
@@ -97,7 +95,7 @@ menu() {
                 ;;
             3)
                 echo "Installing file browser"
-                bash "filebrowser/fb.sh" $web_server
+                bash "filebrowser/fb.sh" "${web_server}"
                 ;;
             4) 
                 echo "Domain must be pointed to IP Address and"

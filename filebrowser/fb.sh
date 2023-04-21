@@ -47,11 +47,10 @@ EOF
 
 enable_service() {
     systemctl enable filebrowser.service
-    systemctl start filebrowser.service
+    systemctl restart filebrowser.service
 }
 
 enable_port() {
-    web_server="${1}"
     while true; do
         read -p "Enter a port number (default: 8080): " input_port
         port=${input_port:-8080}
@@ -62,17 +61,6 @@ enable_port() {
             echo "Invalid port number. Please enter a number between 80 and 65353."
         fi
     done
-
-    source "../hosts/port_${web_server}.sh" "${port}"
-    exit_status=$?
-
-    if [ "${exit_status}" -eq 0 ]; then
-        echo "Apache2 is now listening on port ${port}."
-    elif [ "${exit_status}" -eq 2 ]; then
-        echo "Port ${port} is already in use."
-    else
-        echo "An error occurred. Check the output of the port_${web_server}.sh script for details."
-    fi
 }
 
 
@@ -85,4 +73,5 @@ main() {
     echo "You can access your filebrowser here http://$ip_address:$port"
 }
 
+web_server=$1
 main
