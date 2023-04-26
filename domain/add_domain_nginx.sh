@@ -23,7 +23,7 @@ done
 
 # List all configuration files in the nginx/conf.d directory
 echo "Available websites' files:"
-ls /etc/nginx/conf.d/
+ls /etc/nginx/conf.d/*.conf | sed -e 's/\.conf$//' -e 's|/etc/nginx/conf.d/||'
 
 # Ask the user which configuration file they want to modify
 read -p "Enter the name of the configuration file you want to modify: " conf_file

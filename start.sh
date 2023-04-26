@@ -85,13 +85,7 @@ menu() {
                 bash "cms/select_cms.sh"
                 ;;
             2)
-                if [[ $web_server == "apache" ]]; then
-                    bash "$(pwd)/domain/add_domain_a2.sh"
-                elif [[ $web_server == "nginx" ]]; then
-                    bash "$(pwd)/domain/add_domain_ng.sh"
-                else
-                    echo "Install Apache or Nginx web server"
-                fi
+                bash "domain/add_domain_${web_server}.sh"
                 ;;
             3)
                 echo "Installing file browser"
@@ -99,6 +93,8 @@ menu() {
                 ;;
             4) 
                 echo "Domain must be pointed to IP Address and"
+                sleep 3
+                bash "domain/add_domain_${web_server}.sh"
                 ;;
             5)
                 # Exit the script
