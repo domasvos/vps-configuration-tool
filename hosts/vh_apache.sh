@@ -26,11 +26,17 @@ while true; do
     fi
 done
 
-# Check for Apache2 or Httpd and set the configuration directory accordingly
+# Check for Apache2 or Httpd and set the configuration directory and log paths accordingly
 if command -v apache2 &> /dev/null; then
     config_dir="/etc/apache2/sites-available"
+    log_dir="/var/log/apache2"
+    error_log="\${APACHE_LOG_DIR}/error.log"
+    custom_log="\${APACHE_LOG_DIR}/access.log combined"
 elif command -v httpd &> /dev/null; then
     config_dir="/etc/httpd/conf.d"
+    log_dir="/var/log/httpd"
+    error_log="${log_dir}/${directory}_error.log"
+    custom_log="${log_dir}/${directory}_access.log combined"
 else
     echo "No supported web server found."
     return 1
@@ -45,8 +51,8 @@ cat <<- EOF | sudo tee "${config_dir}/${directory}.conf"
         <Directory /var/www/html/${directory}>
             AllowOverride All
         </Directory>
-        ErrorLog \${APACHE_LOG_DIR}/error.log
-        CustomLog \${APACHE_LOG_DIR}/access.log combined
+        ErrorLog ${error_log}
+        CustomLog ${custom_log}
 </VirtualHost>
 EOF
 

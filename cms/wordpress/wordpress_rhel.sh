@@ -73,12 +73,12 @@ configure_database() {
     read -p "Enter WordPress database password: " dbpass
     read -p "Enter WordPress database password: " dbname
     sudo mysql -e "CREATE DATABASE $dbname DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
-    sudo mysql -e "GRANT ALL ON $dbname.* TO '$wpuser'@'localhost' IDENTIFIED BY '$wppass';"
+    sudo mysql -e "GRANT ALL ON $dbname.* TO '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
     sudo mysql -e "FLUSH PRIVILEGES;"
     sudo -u apache cp -r "/var/www/html/wordpress$i/wp-config-sample.php" "/var/www/html/wordpress$i/wp-config.php"
     sudo -u apache sed -i "s/database_name_here/$dbname/" "/var/www/html/wordpress$i/wp-config.php"
-    sudo -u apache sed -i "s/username_here/$wpuser/" "/var/www/html/wordpress$i/wp-config.php"
-    sudo -u apache sed -i "s/password_here/$wppass/" "/var/www/html/wordpress$i/wp-config.php"
+    sudo -u apache sed -i "s/username_here/$dbuser/" "/var/www/html/wordpress$i/wp-config.php"
+    sudo -u apache sed -i "s/password_here/$dbpass/" "/var/www/html/wordpress$i/wp-config.php"
     generate_keys
 }
 
