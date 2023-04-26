@@ -11,17 +11,6 @@ check_installed() {
     fi
 }
 
-# Function to check which web server is running
-check_webserver() {
-    if [ -x "$(command -v nginx)" ]; then
-        WEBSERVER='nginx'
-    elif [ -x "$(command -v httpd)" ]; then
-        WEBSERVER='httpd'
-    else
-        echo "Neither Apache nor Nginx is installed. Please install one of them and try again."
-        exit 1
-    fi
-}
 
 # Function to install WordPress
 install_wordpress() {
@@ -93,48 +82,12 @@ configure_database() {
     generate_keys
 }
 
-# Function to configure WordPress for the chosen web server
 configure_webserver() {
-    if [ "$WEBSERVER" == "nginx" ]; then
-        sudo systemctl restart nginx
-    else
-        sudo systemctl restart httpd
-    fi
-}
 
-configure_apache() {
-    read -p "Enter the desired port number [default 80][0 - 65535]: " port
-    if [ -z "$port" ]; then
-        port=80
-    fi
-    if ! [[ $input =~ ^[0-9]+$ ]] && ! [ "$port" -le 65535 ]; then
-        echo "Invalid port. Port must be a number and not greater than 65535"
-        configure_apache
-    fi
-    if [ "$(lsof -i:$port | grep -c "LISTEN")" -ne 0 ]; then
-        echo "Port $port is already in use. Please choose a different port"
-        configure_apache
-    fi
-
-    cat <<- EOF | sudo tee /etc/httpd/conf.d/wordpress$i.conf
-<VirtualHost *:$port>
-        ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/html/wordpress$i
-        ServerName wordpress$i
-        <Directory /var/www/html/wordpress$i>
-            AllowOverride All
-        </Directory>
-        ErrorLog /var/log/httpd/error.log
-        CustomLog /var/log/httpd/access.log combined
-</VirtualHost>
-EOF
-    echo -e "\n# Added by Opti-Tool WordPres installation\nListen $port" >> /etc/httpd/conf/httpd.conf
-    sudo mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.bak > /dev/null 2>&1
-    sudo systemctl restart httpd
+    source "../../hosts/vh_${web_server}.sh" "wordpress$i"
 }
 
 finalizing() {
-    ip_address=$(hostname -I | awk '{print $2}')
     echo "You can access your website on http://$ip_address:$port"
     echo "You will need to setup your database in the website, here are your website details:"
     echo "Database Name: $dbname"
@@ -149,4 +102,4 @@ do
     check_installed "$dep"
 done
 
-check_webserver && install_wordpress && install_php && configure_database && configure_webserver && configure_apache && finalizing
+install_wordpress && install_php && configure_database && configure_webserver && finalizing

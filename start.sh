@@ -1,4 +1,4 @@
-#!/bin/source
+#!/bin/bash
 
 get_web_server() {
     if command -v apache2 > /dev/null || command -v httpd > /dev/null; then

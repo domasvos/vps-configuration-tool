@@ -67,8 +67,15 @@ configure_database() {
 
 configure_webserver() {
 
-    echo "${web_server}"
-    bash "../../hosts/vh_apache.sh" "wordpress$i"
+    source "../../hosts/vh_${web_server}.sh" "wordpress$i"
+}
+
+finalizing() {
+    echo "You can access your website on http://$ip_address:$port"
+    echo "You will need to setup your database in the website, here are your website details:"
+    echo "Database Name: $DBNAME"
+    echo "Database Username: $wpuser"
+    echo "Database Password: $wppass"
 }
 
 # Check and install dependencies
@@ -78,7 +85,6 @@ do
     check_installed "$dep"
 done
 
-check_webserver
 install_wordpress
 configure_database
-configure_webserver
+configure_webserver && finalizing

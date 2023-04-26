@@ -18,7 +18,6 @@ install_filebrowser() {
 }
 
 create_configuration() {
-    ip_address=$(hostname -I | awk '{if ($1 != "127.0.0.1") {print $1} else {print $2}}')
     local root_folder=${1:-/var/www/html}
 
     cat > /etc/filebrowser.json <<EOF

@@ -129,40 +129,13 @@ configure_config() {
     
 }
 
-configure_apache() {
+configure_webserver() {
 
-    read -p "Enter the desired port number [default 80][0 - 65535]: " port
-    if [ -z "$port" ]; then
-        port=80
-    fi
-    if ! [[ $input =~ ^[0-9]+$ ]] && ! [ "$port" -le 65535 ]; then
-        echo "Invalid port. Port must be a number and not greater than 65535"
-        configure_apache
-    fi
-    if [ "$(sudo lsof -i:$port | grep -c "LISTEN")" -ne 0 ]; then
-        echo "Port $port is already in use. Please choose a different port"
-        configure_apache
-    fi
+    source "../../hosts/vh_${web_server}.sh" "opencart$i"
 
-    cat <<- EOF | sudo tee /etc/httpd/conf.d/opencart$i.conf
-<VirtualHost *:$port>
-        ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/html/opencart$i
-        ServerName opencart$i
-        <Directory /var/www/html/opencart$i>
-            AllowOverride All
-        </Directory>
-        ErrorLog /var/log/httpd/opencart$i.error.log
-        CustomLog /var/log/httpd/opencart$i.access.log combined
-</VirtualHost>
-EOF
-    echo -e "\n# Added by Opti-Tool OpenCart installation\nListen $port" >> /etc/httpd/conf/httpd.conf
-    sudo systemctl enable httpd
-    sudo systemctl restart httpd
 }
 
 finalizing() {
-    ip_address=$(hostname -I | awk '{print $2}')
     echo "You can access your website on http://$ip_address:$port"
     echo "You will need to setup your database in the website, here are your website details:"
     echo "Database Name: $dbname"
@@ -170,4 +143,4 @@ finalizing() {
     echo "Database Password: $dbpass"
 }
 
-prerequisites && check_modules && install_opencart && configure_database && configure_config && configure_apache && finalizing
+prerequisites && check_modules && install_opencart && configure_database && configure_config && configure_webserver && finalizing

@@ -118,41 +118,13 @@ configure_database() {
 
 # Adding choice to configure website on Port or Full domain
 
-configure_apache() {
+configure_webserver() {
 
-    read -p "Enter the desired port number [default 80][0 - 65535]: " port
-    if [ -z "$port" ]; then
-        port=80
-    fi
-    if ! [[ $input =~ ^[0-9]+$ ]] && ! [ "$port" -le 65535 ]; then
-        echo "Invalid port. Port must be a number and not greater than 65535"
-        configure_apache
-    fi
-    if [ "$(lsof -i:$port | grep -c "LISTEN")" -ne 0 ]; then
-        echo "Port $port is already in use. Please choose a different port"
-        configure_apache
-    fi
+    source "../../hosts/vh_${web_server}.sh" "prestashop$i"
 
-    cat <<- EOF | sudo tee /etc/apache2/sites-available/prestashop$i.conf
-<VirtualHost *:$port>
-        ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/html/prestashop$i
-        ServerName prestashop$i
-        <Directory /var/www/html/prestashop$i>
-            AllowOverride All
-        </Directory>
-        ErrorLog /var/log/apache2/prestashop.error.log
-        CustomLog /var/log/apache2/prestashop.access.log combined
-</VirtualHost>
-EOF
-    echo -e "\n# Added by Opti-Tool PrestaShop installation\nListen $port" >> /etc/apache2/ports.conf
-    sudo a2ensite prestashop$i
-    sudo a2enmod rewrite
-    sudo service apache2 restart
 }
 
 finalizing() {
-    ip_address=$(hostname -I | awk '{print $2}')
     echo "You can access your website on http://$ip_address:$port"
     echo "You will need to setup your database in the website, here are your website details:"
     echo "Database Name: $dbname"
@@ -160,4 +132,4 @@ finalizing() {
     echo "Database Password: $dbpass"
 }
 
-prerequisites && check_modules && install_presta && configure_apache && configure_database && finalizing
+prerequisites && check_modules && install_presta && configure_webserver && configure_database && finalizing
