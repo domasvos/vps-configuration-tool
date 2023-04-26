@@ -84,7 +84,7 @@ configure_database() {
 
 configure_webserver() {
 
-    source "../../hosts/vh_${web_server}.sh" "wordpress$i"
+    source "$main_pwd/hosts/vh_${web_server}.sh" "wordpress$i"
 }
 
 finalizing() {

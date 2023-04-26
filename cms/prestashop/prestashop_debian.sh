@@ -120,7 +120,7 @@ configure_database() {
 
 configure_webserver() {
 
-    source "../../hosts/vh_${web_server}.sh" "prestashop$i"
+    source "$main_pwd/hosts/vh_${web_server}.sh" "prestashop$i"
 
 }
 

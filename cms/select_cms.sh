@@ -1,7 +1,6 @@
 #!/bin/bash
-
+clear
 selectCms() {
-    clear
     echo -e "\033[33mSelect which Content Management System you wish to install (1-4): \033[0m" && sleep 0.3
     echo -e "1. \033[94mWordPress\033[0m" && sleep 0.1
     echo -e "2. \033[34mPresta\033[35mShop\033[0m" && sleep 0.1
@@ -14,15 +13,15 @@ selectCms() {
         1)
             echo "You chose WordPress"
             echo "|-----------------|"
-            source "$(pwd)/cms/wordpress/wordpress_${distro_base}.sh"
+            source "$main_pwd/cms/wordpress/wordpress_${distro_base}.sh"
             ;;
         2)
             echo "You chose PrestaShop"
-            source "$(pwd)/cms/prestashop/prestashop_${distro_base}.sh"
+            source "$main_pwd/cms/prestashop/prestashop_${distro_base}.sh"
             ;;
         3)
             echo "You chose OpenCart"
-            source "$(pwd)/cms/opencart/opencart_${distro_base}.sh"
+            source "$main_pwd/cms/opencart/opencart_${distro_base}.sh"
             ;;
         4)
             run=false
