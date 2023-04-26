@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/source
 
 get_web_server() {
     if command -v apache2 > /dev/null || command -v httpd > /dev/null; then
@@ -41,14 +41,8 @@ vps_information() {
     # Set the text color to gold
     echo -e "\033[33m"
 
-    # Collect system information
-    distro_name=$(grep '^NAME=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
-    distro_version=$(grep '^VERSION_ID=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
-    disk_usage=$(df -h | awk 'NR==2{print $3 " / " $2}')
-    ram_usage=$(free -h | awk 'NR==2{print $3 " / " $2}')
-    cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "%.1f%% / 100%%", usage}')
-    ip_address=$(hostname -I | awk '{print $2}')
-    web_server=$(get_web_server)
+    # Source variables
+    source vars
 
     # Print table header
     printf "+--------------------+--------------------------+\n"
@@ -82,19 +76,19 @@ menu() {
         # Handle the user's selection
         case $choice in
             1)
-                bash "cms/select_cms.sh"
+                source "cms/select_cms.sh"
                 ;;
             2)
-                bash "domain/add_domain_${web_server}.sh"
+                source "domain/add_domain_${web_server}.sh"
                 ;;
             3)
                 echo "Installing file browser"
-                bash "filebrowser/fb.sh" "${web_server}"
+                source "filebrowser/fb.sh" "${web_server}"
                 ;;
             4) 
                 echo "Domain must be pointed to IP Address and"
                 sleep 3
-                bash "domain/add_domain_${web_server}.sh"
+                source "domain/add_domain_${web_server}.sh"
                 ;;
             5)
                 # Exit the script

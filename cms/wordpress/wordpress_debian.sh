@@ -67,6 +67,7 @@ configure_database() {
 
 configure_webserver() {
 
+    echo "${web_server}"
     bash "../../hosts/vh_apache.sh" "wordpress$i"
 }
 

@@ -14,15 +14,15 @@ selectCms() {
         1)
             echo "You chose WordPress"
             echo "|-----------------|"
-            bash "$(pwd)/cms/wordpress/wordpress_debian.sh"
+            source "$(pwd)/cms/wordpress/wordpress_${distro_base}.sh"
             ;;
         2)
             echo "You chose PrestaShop"
-            bash "$(pwd)/cms/prestashop/prestashop_debian.sh"
+            source "$(pwd)/cms/prestashop/prestashop_${distro_base}.sh"
             ;;
         3)
             echo "You chose OpenCart"
-            bash "$(pwd)/cms/opencart/opencart_debian.sh"
+            source "$(pwd)/cms/opencart/opencart_${distro_base}.sh"
             ;;
         4)
             run=false
