@@ -11,6 +11,7 @@ get_web_server() {
 }
 
 title() {
+    printf '\e[?25l'
     color_codes=(31 32 34 36 91 94 95 97 32)
     for color_code in "${color_codes[@]}"; do
         clear
@@ -33,6 +34,7 @@ title() {
       |_|"
         sleep 0.3
     done
+    printf '\e[?25h'
 }
 
 vps_information() {
@@ -42,6 +44,7 @@ vps_information() {
     echo -e "\033[33m"
 
     # Source variables
+    sed -i 's/\r//' vars
     source vars
 
     # Print table header
