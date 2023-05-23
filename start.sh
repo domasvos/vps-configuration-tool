@@ -63,35 +63,54 @@ vps_information() {
     # Print table footer
     printf "+--------------------+--------------------------+\n"
 }
+
 menu() {
     while true; do
         # Display the options menu
         echo -e "\033[1m\033[36mPlease choose an option:\033[0m"
-        echo -e "\033[32m1. Install Content Management System"
-        echo -e "2. Configure a domain for a website"
-        echo -e "3. Configure a file browser"
-        echo -e "4. Configure SSL certificate"
-        echo -e "5. Exit\033[0m"
         
+        # Check if a web server is installed
+        if [ "$(get_web_server)" = "N/A" ]; then
+            echo -e "\033[32m1. Install Web Server"
+            echo -e "2. Exit\033[0m"
+            max_choice=2
+        else
+            echo -e "\033[32m1. Install Content Management System"
+            echo -e "2. Configure a domain for a website"
+            echo -e "3. Configure a file browser"
+            echo -e "4. Configure SSL certificate"
+            echo -e "5. Exit\033[0m"
+            max_choice=5
+        fi
+
         # Get the user's choice
-        read -p "Enter the number of your choice (1-4): " choice
+        read -p "Enter the number of your choice (1-$max_choice): " choice
 
         # Handle the user's selection
         case $choice in
             1)
-                source "cms/select_cms.sh"
+                if [ "$(get_web_server)" = "N/A" ]; then
+                    echo "Installing web server"
+                    # Add your web server installation command here
+                    break
+                else
+                    source "cms/select_cms.sh"
+                fi
                 ;;
             2)
-                source "domain/add_domain_${web_server}.sh"
+                if [ "$(get_web_server)" != "N/A" ]; then
+                    source "cms/select_cms.sh"
+                else
+                    # Exit the script
+                    break
+                fi
                 ;;
             3)
+                source "domain/add_domain_${web_server}.sh"
+                ;;
+            4)
                 echo "Installing file browser"
                 source "filebrowser/fb.sh" "${web_server}"
-                ;;
-            4) 
-                echo "Domain must be pointed to IP Address and"
-                sleep 3
-                source "domain/add_domain_${web_server}.sh"
                 ;;
             5)
                 # Exit the script
@@ -99,10 +118,11 @@ menu() {
                 ;;
             *)
                 # Invalid input
-                echo -e "\033[31mInvalid input. Please enter a number between 1 and 4.\033[0m"
+                echo -e "\033[31mInvalid input. Please enter a number between 1 and $max_choice.\033[0m"
                 ;;
         esac
     done
 }
+
 
 vps_information && menu

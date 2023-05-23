@@ -45,7 +45,7 @@ check_modules() {
     run_cmd update -y
 
     # Dependencies
-    deps=("httpd" "php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
+    deps=("php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
 
     for dep in "${deps[@]}"
     do
