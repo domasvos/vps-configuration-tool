@@ -1,22 +1,25 @@
 #!/bin/bash
 
 get_web_server() {
-    if command -v apache2 > /dev/null; then
-        echo "Apache"
+    if command -v apache2 > /dev/null || command -v httpd > /dev/null; then
+        echo "apache"
     elif command -v nginx > /dev/null; then
-        echo "Nginx"
-    elif command -v lighttpd > /dev/null; then
-        echo "Lighttpd"
+        echo "nginx"
     else
         echo "N/A"
     fi
 }
 
-vps_information() {
-echo " _    _      _                            _
+title() {
+    printf '\e[?25l'
+    color_codes=(31 32 34 36 91 94 95 97 32)
+    for color_code in "${color_codes[@]}"; do
+        clear
+        echo -e "\033[${color_code}m
+ _    _      _                            _
 | |  | |    | |                          | |
 | |  | | ___| | ___ ___  _ __ ___   ___  | |_ ___
-| |/\| |/ _ \ |/ __/ _ \| '_ \` _ \ / _ \ | __/ _ \
+| |/\| |/ _ \ |/ __/ _ \| '_ ' _ \ / _ \ | __/ _-
 \  /\  /  __/ | (_| (_) | | | | | |  __/ | || (_) |
  \/  \/ \___|_|\___\___/|_| |_| |_|\___|  \__\___/
 
@@ -28,88 +31,98 @@ echo " _    _      _                            _
 \ \_/ / |_) | |_| |      | | (_) | (_) | |
  \___/| .__/ \__|_|      \_/\___/ \___/|_|
       | |
-      |_|
+      |_|"
+        sleep 0.3
+    done
+    printf '\e[?25h'
+}
 
------------------------------------------------------      "
-
+vps_information() {
+    
+    title
     # Set the text color to gold
     echo -e "\033[33m"
 
-    # Display the Linux distro name and version
-    distro_name=$(grep '^NAME=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
-    distro_version=$(grep '^VERSION_ID=' /etc/os-release | awk -F '=' '{print $2}' | tr -d '"')
-    echo "Linux distro: $distro_name $distro_version"
+    # Source variables
+    sed -i 's/\r//' vars
+    source vars
 
-    # Set the text color to red
-    echo -e "\033[31m"
+    # Print table header
+    printf "+--------------------+--------------------------+\n"
+    printf "| %-18s | %-24s |\n" "Info" "Value"
+    printf "+--------------------+--------------------------+\n"
 
-    web_server=$(get_web_server)
-    echo -e "Web Server:\033[32m\033[5m $web_server \033[0m"
+    # Print table rows with blinking values
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Linux distribution" "${distro_name} ${distro_version}" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Machine IP Address" "${ip_address}" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Web Server" "$(echo "${web_server^}")" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "Disk Usage" "${disk_usage}" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "RAM Memory Usage" "${ram_usage}" && sleep 0.1
+    printf "| \033[31m%-18s\033[33m | \033[5m%-24s\033[0m\033[33m |\n" "CPU Usage" "${cpu_usage}" && sleep 0.1
 
-    echo -e "\033[31m"
-
-    # Display the disk usage with green and blinking text for used and total amount
-    df -h | awk 'NR==2{print "Disk Usage: " "\033[32m" "\033[5m" $3 "/" "\033[32m" $2 "\033[0m"}'
-
-    # Set the text color to red
-    echo -e "\033[31m"
-
-    # Display the RAM memory usage with green and blinking text for used and total amount
-    free -h | awk 'NR==2{print "RAM Memory usage: " "\033[32m" "\033[5m" $3 "/" "\033[32m" $2 "\033[0m"}'
-
-    # Set the text color to red
-    echo -e "\033[31m"
-
-    # Display the CPU usage with green and blinking text for used and total amount
-    grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "CPU usage: " "\033[32m" "\033[5m" "%.1f%%/100%%\033[32m\033[5m\n", usage}'
-
-    # Set the text color back to the default
-    echo -e "\033[0m"
-
-    # Display the options menu
-    echo "Please choose an option:"
-    echo "1. Install CyberPanel"
-    echo "2. Install Content Management System"
-    echo "3. Exit"
-
-    # Read in the user's selection
-    read -p "Enter your choice: " choice
-
-    # Set the text color back to the default
-    echo -e "\033[0m"
+    # Print table footer
+    printf "+--------------------+--------------------------+\n"
 }
 
 menu() {
-    # Handle the user's selection
-    case $choice in
-        1)
-            # Display the necessary requirements for CyberPanel
-            echo -e "\033[31mPython is necessary and will be installed."
-            echo -e "CyberPanel requires at least 1024MB of Ram memory."
-            echo -e "CyberPanel requires at least 10GB of free disk space.\033[0m"
+    while true; do
+        # Display the options menu
+        echo -e "\033[1m\033[36mPlease choose an option:\033[0m"
+        
+        # Check if a web server is installed
+        if [ "$(get_web_server)" = "N/A" ]; then
+            echo -e "\033[32m1. Install Web Server"
+            echo -e "2. Exit\033[0m"
+            max_choice=2
+        else
+            echo -e "\033[32m1. Install Content Management System"
+            echo -e "2. Configure a domain for a website"
+            echo -e "3. Configure a file browser"
+            echo -e "4. Configure SSL certificate"
+            echo -e "5. Exit\033[0m"
+            max_choice=5
+        fi
 
-            # Ask the user if they still want to install CyberPanel
-            read -p "Do you want to install CyberPanel (y/N)? " install_cyberpanel
-            if [[ $install_cyberpanel =~ ^[Yy]$ ]]; then
-                bash install_cyberpanel.sh
-            else
-                # Return to the options menu
-                vps_information
-		        menu
-            fi
-            ;;
-        2)
-            bash cms/select_cms.sh
-            ;;
+        # Get the user's choice
+        read -p "Enter the number of your choice (1-$max_choice): " choice
 
-        3)
-            # Exit the script
-            run=false
-            ;;
-    esac
+        # Handle the user's selection
+        case $choice in
+            1)
+                if [ "$(get_web_server)" = "N/A" ]; then
+                    echo "Installing web server"
+                    # Add your web server installation command here
+                    break
+                else
+                    source "cms/select_cms.sh"
+                fi
+                ;;
+            2)
+                if [ "$(get_web_server)" != "N/A" ]; then
+                    source "cms/select_cms.sh"
+                else
+                    # Exit the script
+                    break
+                fi
+                ;;
+            3)
+                source "domain/add_domain_${web_server}.sh"
+                ;;
+            4)
+                echo "Installing file browser"
+                source "filebrowser/fb.sh" "${web_server}"
+                ;;
+            5)
+                # Exit the script
+                break
+                ;;
+            *)
+                # Invalid input
+                echo -e "\033[31mInvalid input. Please enter a number between 1 and $max_choice.\033[0m"
+                ;;
+        esac
+    done
 }
-run=true
-while $run; do
-vps_information
-menu
-done
+
+
+vps_information && menu

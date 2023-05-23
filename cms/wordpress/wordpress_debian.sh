@@ -65,45 +65,17 @@ configure_database() {
     generate_keys
 }
 
-# Function to configure WordPress for the chosen web server
 configure_webserver() {
-    if [ "$WEBSERVER" == "nginx" ]; then
-        sudo service nginx restart
-    else
-        sudo service apache2 restart
-    fi
+
+    source "$main_pwd/hosts/vh_${web_server}.sh" "wordpress$i"
 }
 
-configure_apache() {
-
-    read -p "Enter the desired port number [default 80][0 - 65535]: " port
-    if [ -z "$port" ]; then
-        port=80
-    fi
-    if ! [[ $input =~ ^[0-9]+$ ]] && ! [ "$port" -le 65535 ]; then
-        echo "Invalid port. Port must be a number and not greater than 65535"
-        configure_apache
-    fi
-    if [ "$(lsof -i:$port | grep -c "LISTEN")" -ne 0 ]; then
-        echo "Port $port is already in use. Please choose a different port"
-        configure_apache
-    fi
-
-    cat <<- EOF | sudo tee /etc/apache2/sites-available/wordpress$i.conf
-<VirtualHost *:$port>
-        ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/html/wordpress$i
-        ServerName wordpress$i
-        <Directory /var/www/html/wordpress$i>
-            AllowOverride All
-        </Directory>
-        ErrorLog \${APACHE_LOG_DIR}/error.log
-        CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-EOF
-    echo -e "\n# Added by Opti-Tool WordPres installation\nListen $port" >> /etc/apache2/ports.conf
-    sudo a2ensite wordpress$i
-    sudo service apache2 restart
+finalizing() {
+    echo "You can access your website on http://$ip_address:$port"
+    echo "You will need to setup your database in the website, here are your website details:"
+    echo "Database Name: $DBNAME"
+    echo "Database Username: $wpuser"
+    echo "Database Password: $wppass"
 }
 
 # Check and install dependencies
@@ -113,8 +85,6 @@ do
     check_installed "$dep"
 done
 
-check_webserver
 install_wordpress
 configure_database
-configure_webserver
-configure_apache
+configure_webserver && finalizing
