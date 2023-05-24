@@ -103,6 +103,7 @@ menu() {
                     source "cms/select_cms.sh"
                 else
                     # Exit the script
+                    exit_program=1
                     break
                 fi
                 ;;
@@ -125,7 +126,7 @@ menu() {
         esac
     done
 }
-exit_program=0
-while ((exit_program == 0));; do
+declare -g exit_program=0
+while ((exit_program == 0)); do
 vps_information && menu
 done
