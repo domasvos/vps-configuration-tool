@@ -69,7 +69,7 @@ finalizing() {
     echo -e "+--------------------------+\n"
     
     read -n1 -p "Press any key to return to the main menu..."
-    echp -e "\n"
+    echo -e "\n"
     return
 
 }

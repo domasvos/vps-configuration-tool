@@ -115,7 +115,7 @@ menu() {
                 ;;
             5)
                 # Exit the script
-                to-run=false
+                break
                 ;;
             *)
                 # Invalid input
@@ -125,7 +125,6 @@ menu() {
     done
 }
 
-to-run=true
-while to-run; do
+while true; do
 vps_information && menu
 done
