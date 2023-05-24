@@ -44,18 +44,17 @@ install_webserver() {
     echo -e "\033[32m1. Nginx"
     echo -e "2. Apache\033[0m"
     read -p "Enter the number of your choice (1-2): " choice
+    run_cmd update -y
 
     case "$choice" in
         1)
-            run_cmd update
             run_cmd install -y nginx
             ;;
         2)
-            run_cmd update
             if [ "$distro_base" == "debian" ]; then
-                run_cmd install -y apache2
+                run_cmd install -y apache2 && finalizing
             else
-                run_cmd install -y httpd
+                run_cmd install -y httpd && finalizing
             fi
             ;;
         *)
@@ -63,6 +62,18 @@ install_webserver() {
             echo -e "\033[31mInvalid input. Please enter a number between 1 and 2.\033[0m"
             ;;
     esac
+}
+
+finalizing() {
+
+    clear
+    echo -e "\n+--------------------------+"
+    echo -e "| \033[32mINSTALLATION COMPLETED\033[0m |"
+    echo -e "+--------------------------+\n"
+    
+    read -p "Press any key to return to the main menu..."
+    return 0
+
 }
 
 # Install the web server and return to start.sh

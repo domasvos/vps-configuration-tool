@@ -71,6 +71,7 @@ menu() {
         
         # Check if a web server is installed
         if [ "$(get_web_server)" = "N/A" ]; then
+            echo -e "\033[32mLooks like you are missing Web-Server, please install it first, as most functions will not work"
             echo -e "\033[32m1. Install Web Server"
             echo -e "2. Exit\033[0m"
             max_choice=2
