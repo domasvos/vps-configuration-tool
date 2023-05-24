@@ -90,8 +90,8 @@ menu() {
         case $choice in
             1)
                 if [ "$(get_web_server)" = "N/A" ]; then
-                    echo "Installing web server"
-                    # Add your web server installation command here
+                    clear
+                    source web_server/install_webserver.sh
                     break
                 else
                     source "cms/select_cms.sh"
