@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Import variables from vars file
-source vars
-
 # Determine the package manager
 get_package_manager() {
     if command -v apt-get &> /dev/null; then
@@ -48,7 +45,7 @@ install_webserver() {
 
     case "$choice" in
         1)
-            run_cmd install -y nginx
+            run_cmd install -y nginx && finalizing
             ;;
         2)
             if [ "$distro_base" == "debian" ]; then
@@ -71,8 +68,9 @@ finalizing() {
     echo -e "| \033[32mINSTALLATION COMPLETED\033[0m |"
     echo -e "+--------------------------+\n"
     
-    read -p "Press any key to return to the main menu..."
-    return 0
+    read -n1 -p "Press any key to return to the main menu..."
+    echp -e "\n"
+    return
 
 }
 
