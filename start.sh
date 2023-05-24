@@ -115,6 +115,7 @@ menu() {
                 ;;
             5)
                 # Exit the script
+                exit_program=1
                 break
                 ;;
             *)
@@ -124,7 +125,7 @@ menu() {
         esac
     done
 }
-
-while true; do
+exit_program=0
+while ((exit_program == 0));; do
 vps_information && menu
 done
