@@ -69,9 +69,6 @@ else
   return 1
 fi
 
-
-
-
 # Get the IP address of the current host
 host_ip=$(curl -s https://ipinfo.io/ip)
 
