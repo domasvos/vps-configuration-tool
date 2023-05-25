@@ -19,6 +19,15 @@ function check_domain_exists {
   return 1
 }
 
+finalizing() {
+
+    clear
+    echo -e "\n+--------------------------+"
+    echo -e "| \033[32mCONFIGURATION COMPLETED\033[0m |"
+    echo -e "+--------------------------+\n"
+    
+}
+
 # Ask the user for a domain name
 while true; do
   read -p "Enter the domain name: " domain
@@ -53,6 +62,23 @@ if [ ! -f "$config_dir/$conf_file.conf" ]; then
   return 1
 fi
 
+# Get the IP address associated with the domain
+domain_ip=$(dig +short $domain @8.8.8.8)
+
+# Check if the domain points to the host IP
+if [ "$ip_address" != "$domain_ip" ]; then
+    echo -e "\e[31mWarning: The domain $domain does not seem to be pointed to this server's IP address ($ip_address).\e[0m"
+
+    while true; do
+        read -p "Do you want to continue? [y/n]: " yn
+        case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) return;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+fi
+
 # Add the ServerName directive to the .conf file
 sudo sed -i "s/ServerName .*/ServerName $domain/" "$config_dir/$conf_file.conf"
 
@@ -61,30 +87,10 @@ sudo sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:80>/" "$config_dir/$conf_file.
 
 # Restart the Apache web server
 if command -v apache2 &> /dev/null; then 
-  sudo systemctl restart apache2 && echo "Done!"
+  sudo systemctl restart apache2 && finalizing
 elif command -v httpd &> /dev/null; then
-  sudo systemctl restart httpd && echo "Done!"
+  sudo systemctl restart httpd && finalizing
 else
   echo "No supported web server found."
   return 1
-fi
-
-# Get the IP address of the current host
-host_ip=$(curl -s https://ipinfo.io/ip)
-
-# Get the IP address associated with the domain
-domain_ip=$(dig +short $domain @8.8.8.8)
-
-# Check if the domain points to the host IP
-if [ "$host_ip" != "$domain_ip" ]; then
-    echo "Warning: The domain $domain does not seem to be pointed to this server's IP address ($host_ip)."
-
-    while true; do
-        read -p "Do you want to continue? [y/n]: " yn
-        case $yn in
-            [Yy]* ) break;;
-            [Nn]* ) exit;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
 fi
