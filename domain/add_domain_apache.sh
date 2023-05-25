@@ -69,23 +69,22 @@ else
   return 1
 fi
 
-## Check if domain is pointed
 # Get the IP address of the current host
-#host_ip=$(curl -s https://ipinfo.io/ip)
+host_ip=$(curl -s https://ipinfo.io/ip)
 
 # Get the IP address associated with the domain
-#domain_ip=$(dig +short $domain @8.8.8.8)
+domain_ip=$(dig +short $domain @8.8.8.8)
 
 # Check if the domain points to the host IP
-#if [ "$host_ip" != "$domain_ip" ]; then
-#    echo "Warning: The domain $domain does not seem to be pointed to this server's IP address ($host_ip)."
-#
-#    while true; do
-#        read -p "Do you want to continue? [y/n]: " yn
-#        case $yn in
-#            [Yy]* ) break;;
-#            [Nn]* ) exit;;
-#            * ) echo "Please answer yes or no.";;
-#        esac
-#    done
-#fi
+if [ "$host_ip" != "$domain_ip" ]; then
+    echo "Warning: The domain $domain does not seem to be pointed to this server's IP address ($host_ip)."
+
+    while true; do
+        read -p "Do you want to continue? [y/n]: " yn
+        case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+fi

@@ -71,6 +71,7 @@ menu() {
         
         # Check if a web server is installed
         if [ "$(get_web_server)" = "N/A" ]; then
+            echo -e "\033[32mLooks like you are missing Web-Server, please install it first, as most functions will not work"
             echo -e "\033[32m1. Install Web Server"
             echo -e "2. Exit\033[0m"
             max_choice=2
@@ -90,8 +91,8 @@ menu() {
         case $choice in
             1)
                 if [ "$(get_web_server)" = "N/A" ]; then
-                    echo "Installing web server"
-                    # Add your web server installation command here
+                    clear
+                    source web_server/install_webserver.sh
                     break
                 else
                     source "cms/select_cms.sh"
@@ -102,6 +103,7 @@ menu() {
                     source "cms/select_cms.sh"
                 else
                     # Exit the script
+                    exit_program=1
                     break
                 fi
                 ;;
@@ -114,6 +116,7 @@ menu() {
                 ;;
             5)
                 # Exit the script
+                exit_program=1
                 break
                 ;;
             *)
@@ -123,6 +126,7 @@ menu() {
         esac
     done
 }
-
-
+declare -g exit_program=0
+while ((exit_program == 0)); do
 vps_information && menu
+done

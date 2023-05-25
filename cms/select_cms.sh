@@ -31,7 +31,7 @@ selectCms() {
     esac
 }
 
-run=true
+declare -g run=true
 while $run; do
 selectCms
 done

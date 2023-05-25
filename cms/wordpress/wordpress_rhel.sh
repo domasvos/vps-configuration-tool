@@ -88,12 +88,24 @@ configure_webserver() {
 }
 
 finalizing() {
-    echo "You can access your website on http://$ip_address:$port"
-    echo "You will need to setup your database in the website, here are your website details:"
-    echo "Database Name: $dbname"
-    echo "Database Username: $dbuser"
-    echo "Database Password: $dbpass"
+    # Set the text color to gold
+    echo -e "\033[33m"
+
+    # Print table header
+    printf "+-------------------+------------------------------------+\n"
+    printf "| %-17s | %-34s |\n" "WordPress" ""
+    printf "+-------------------+------------------------------------+\n"
+
+    # Print table rows with blinking values
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Website URL" "http://$ip_address:$port" && sleep 0.1
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Database Name" "$dbname" && sleep 0.1
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Database Username" "$dbuser" && sleep 0.1
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Database Password" "$dbpass" && sleep 0.1
+
+    # Print table footer
+    printf "+-------------------+------------------------------------+\n"
 }
+
 
 # Check and install dependencies
 deps=("ghostscript" "httpd" "php" "php-bcmath" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-xml" "php-zip" "openssl")
