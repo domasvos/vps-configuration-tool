@@ -9,6 +9,16 @@ function check_domain_exists {
   return 1
 }
 
+finalizing() {
+
+    clear
+    echo -e "\n+--------------------------+"
+    echo -e "| \033[32mCONFIGURATION COMPLETED\033[0m |"
+    echo -e "+--------------------------+\n"
+    
+}
+
+
 # Ask the user for a domain name
 while true; do
   read -p "Enter the domain name: " domain
@@ -21,6 +31,23 @@ while true; do
   fi
 done
 
+# Get the IP address associated with the domain
+domain_ip=$(dig +short $domain @8.8.8.8)
+
+# Check if the domain points to the host IP
+if [ "$ip_address" != "$domain_ip" ]; then
+    echo -e "\e[31mWarning: The domain $domain does not seem to be pointed to this server's IP address ($ip_address).\e[0m"
+
+    while true; do
+        read -p "Do you want to continue? [y/n]: " yn
+        case $yn in
+            [Yy]* ) break;;
+            [Nn]* ) return;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+fi
+
 # List all configuration files in the nginx/conf.d directory
 echo "Available websites' files:"
 ls /etc/nginx/conf.d/*.conf | sed -e 's/\.conf$//' -e 's|/etc/nginx/conf.d/||'
@@ -29,21 +56,19 @@ ls /etc/nginx/conf.d/*.conf | sed -e 's/\.conf$//' -e 's|/etc/nginx/conf.d/||'
 read -p "Enter the name of the configuration file you want to modify: " conf_file
 
 # Check that the specified configuration file exists
-if [ ! -f "/etc/nginx/conf.d/$conf_file" ]; then
-  echo "Error: $conf_file does not exist in /etc/nginx/conf.d"
-  exit 1
+if [ ! -f "/etc/nginx/conf.d/$conf_file.conf" ]; then
+  echo "Error: $conf_file.conf does not exist in /etc/nginx/conf.d"
+  return 1
 fi
 
 # Check if the server_name directive exists in the configuration file
-if grep -q "server_name " "/etc/nginx/conf.d/$conf_file"; then
+if grep -q "server_name " "/etc/nginx/conf.d/$conf_file.conf"; then
   # Replace the server_name directive with the chosen domain name
-  sudo sed -i "s/server_name .*/server_name $domain;/" "/etc/nginx/conf.d/$conf_file"
+  sudo sed -i "s/server_name .*/server_name $domain;/" "/etc/nginx/conf.d/$conf_file.conf"
 else
   # Insert a new server_name directive with the chosen domain name after the listen directive
-  sudo sed -i "/listen .*/a server_name $domain;" "/etc/nginx/conf.d/$conf_file"
+  sudo sed -i "/listen .*/a server_name $domain;" "/etc/nginx/conf.d/$conf_file.conf"
 fi
 
 # Restart the Nginx web server
-sudo systemctl restart nginx
-
-echo "Done!"
+sudo systemctl restart nginx && finalizing
