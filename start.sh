@@ -100,7 +100,7 @@ menu() {
                 ;;
             2)
                 if [ "$(get_web_server)" != "N/A" ]; then
-                    source "cms/select_cms.sh"
+                    source "domain/add_domain_${web_server}.sh"
                 else
                     # Exit the script
                     exit_program=1
@@ -108,11 +108,10 @@ menu() {
                 fi
                 ;;
             3)
-                source "domain/add_domain_${web_server}.sh"
+                source "filebrowser/fb.sh" "${web_server}"
                 ;;
             4)
-                echo "Installing file browser"
-                source "filebrowser/fb.sh" "${web_server}"
+                source "domain/ssl/ssl_${web_server}.sh"
                 ;;
             5)
                 # Exit the script
