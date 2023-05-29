@@ -84,7 +84,7 @@ install_presta() {
 
     # Checking PrestaShop installations
     i=1
-    while [ -d "/var/www/html/presta$i" ]; do
+    while [ -d "/var/www/html/prestashop$i" ]; do
         i=$((i+1))
     done
 
