@@ -29,7 +29,7 @@ enable_php_repo() {
         yum install -y https://rpms.remirepo.net/enterprise/remi-release-$(rpm -E %rhel).rpm
         yum install -y yum-utils
         yum-config-manager --disable 'remi-php*'
-        yum-config-manager --enable remi-php80
+        yum-config-manager --enable remi-php81
     fi
 }
 
@@ -153,6 +153,7 @@ configure_webserver() {
 
 finalizing() {
     # Set the text color to gold
+    clear
     echo -e "\033[33m"
 
     # Print table header

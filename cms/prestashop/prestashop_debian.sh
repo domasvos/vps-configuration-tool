@@ -7,6 +7,12 @@ prerequisites() {
     apt-get update  && apt-get upgrade -y 
 }
 
+enable_php_repo() {
+    apt install -y software-properties-common
+    add-apt-repository -y ppa:ondrej/php
+    apt update
+}
+
 check_modules() {
 
     sudo apt update -y
@@ -129,6 +135,7 @@ configure_webserver() {
 
 finalizing() {
     # Set the text color to gold
+    clear
     echo -e "\033[33m"
 
     # Print table header

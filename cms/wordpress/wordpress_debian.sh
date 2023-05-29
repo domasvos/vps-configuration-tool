@@ -72,6 +72,7 @@ configure_webserver() {
 
 finalizing() {
     # Set the text color to gold
+    clear
     echo -e "\033[33m"
 
     # Print table header
