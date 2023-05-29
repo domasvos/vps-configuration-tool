@@ -22,14 +22,14 @@ enable_php_repo() {
         dnf install -y epel-release
         dnf install -y https://rpms.remirepo.net/enterprise/remi-release-$(rpm -E %rhel).rpm
         dnf module reset -y php
-        dnf module enable -y php:remi-8.0
+        dnf module enable -y php:remi-8.1
         dnf config-manager --set-enabled remi-safe
     elif [ "$PACKAGE_MANAGER" == "yum" ]; then
         yum install -y epel-release
         yum install -y https://rpms.remirepo.net/enterprise/remi-release-$(rpm -E %rhel).rpm
         yum install -y yum-utils
         yum-config-manager --disable 'remi-php*'
-        yum-config-manager --enable remi-php80
+        yum-config-manager --enable remi-php81
     fi
 }
 
@@ -41,7 +41,7 @@ check_modules() {
     $PACKAGE_MANAGER update -y
 
     # Dependencies
-    deps=("httpd" "php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
+    deps=("php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
 
     for dep in "${deps[@]}"
     do
@@ -112,7 +112,7 @@ install_presta() {
     sudo rm -rf /tmp/prestashop-$latest.zip
 
     # Use Composer to Download project's dependencies
-    COMPOSER_ALLOW_SUPERUSER=1 composer install -d /var/www/html/prestashop$i/ -n
+    COMPOSER_ALLOW_SUPERUSER=1 composer install -d /var/www/html/prestashop$i/ -n --ignore-platform-req=ext-gd
 
     # Use NPM to create project's assets
     cd /var/www/html/prestashop$i/
@@ -153,6 +153,7 @@ configure_webserver() {
 
 finalizing() {
     # Set the text color to gold
+    clear
     echo -e "\033[33m"
 
     # Print table header

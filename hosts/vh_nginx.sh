@@ -39,14 +39,36 @@ server {
     listen $port;
     server_name ${directory};
     root /var/www/html/${directory};
-    index index.html index.htm;
+    index index.html index.htm index.php;
 
     location / {
         try_files \$uri \$uri/ =404;
     }
+
+    # Extract PHP-FPM directory dynamically
+    location ~ \.php$ {
+        include fastcgi_params;
+
+        # Search for PHP-FPM socket file
+        set \$php_fpm_socket_file "";
+        if (-e /run/php-fpm) {
+            set \$php_fpm_socket_file "/run/php-fpm/*.sock";
+        }
+        if (-e /var/run/php-fpm) {
+            set \$php_fpm_socket_file "/var/run/php-fpm/*.sock";
+        }
+
+        # Use the first matching PHP-FPM socket file found
+        fastcgi_pass unix:\$php_fpm_socket_file;
+
+        # Additional configuration for PHP-FPM
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param PHP_VALUE "upload_max_filesize=32M";
+    }
 }
 EOF
 
+sudo chown -R nginx:nginx /var/www/html/${directory}
 # Restart the Nginx web server
 sudo systemctl restart nginx
 

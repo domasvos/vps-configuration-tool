@@ -110,6 +110,7 @@ configure_webserver() {
 }
 
 finalizing() {
+    clear
     # Set the text color to gold
     echo -e "\033[33m"
 

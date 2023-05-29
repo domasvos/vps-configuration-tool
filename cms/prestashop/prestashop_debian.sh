@@ -7,6 +7,12 @@ prerequisites() {
     apt-get update  && apt-get upgrade -y 
 }
 
+enable_php_repo() {
+    apt install -y software-properties-common
+    add-apt-repository -y ppa:ondrej/php
+    apt update
+}
+
 check_modules() {
 
     sudo apt update -y
@@ -33,7 +39,7 @@ check_modules() {
 
     # Check if NPM does not exist, if not - install it
     if ! which npm >/dev/null 2>&1; then
-        install_npm
+        install_node
     else
         echo "npm already installed"
     fi
@@ -68,16 +74,17 @@ install_composer() {
     sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 }
 
-install_npm() {
+install_node() {
 
-    sudo apt install -y nodejs npm
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - &&\
+    apt-get install -y nodejs
 }
 
 install_presta() {
 
     # Checking PrestaShop installations
     i=1
-    while [ -d "/var/www/html/presta$i" ]; do
+    while [ -d "/var/www/html/prestashop$i" ]; do
         i=$((i+1))
     done
 
@@ -92,11 +99,13 @@ install_presta() {
     rm -rf /tmp/prestashop-$latest.zip
 
     # Use Composer to Download project's dependencies
-    composer install -d /var/www/html/prestashop$i/ -n
+    COMPOSER_ALLOW_SUPERUSER=1 composer install -d /var/www/html/prestashop$i/ -n --ignore-platform-req=ext-gd
 
     # Use NPM to create project's assets
-    echo "This might take a while..."
-    make assets -C /var/www/html/prestashop$i/ 
+    cd /var/www/html/prestashop$i/
+    npm install --legacy-peer-deps -g npm@6
+    make assets
+    cd -
 
     # Set proper permissions on PrestaShop folder
     chown -R www-data:www-data /var/www/html/prestashop$i/
@@ -126,6 +135,7 @@ configure_webserver() {
 
 finalizing() {
     # Set the text color to gold
+    clear
     echo -e "\033[33m"
 
     # Print table header
