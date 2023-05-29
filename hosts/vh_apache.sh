@@ -60,6 +60,9 @@ EOF
 if command -v apache2 &> /dev/null; then
     echo -e "\n# Added by Opti-Tool WordPres installation\nListen $port" | sudo tee -a /etc/apache2/ports.conf
 fi
+if command -v httpd &> /dev/null; then
+    echo -e "\n# Added by Opti-Tool WordPres installation\nListen $port" | sudo tee -a /etc/httpd/conf/httpd.conf
+fi
 
 # Enable the site and restart the web server
 if command -v apache2 &> /dev/null; then

@@ -1,9 +1,21 @@
 #!/bin/bash
 
+# Check if DNF or YUM is used as package manager
+if [ -x "$(command -v dnf)" ]; then
+    PACKAGE_MANAGER="dnf"
+else
+    PACKAGE_MANAGER="yum"
+fi
+
+run_cmd() {
+    sudo $PACKAGE_MANAGER $@
+}
+
+
 # Function to check if a command is installed
 check_installed() {
     if ! [ -x "$(command -v "$1")" ]; then
-        sudo yum install -y "$1" > /dev/null 2>&1
+        run_cmd install -y "$1" > /dev/null 2>&1
         systemctl start "$1" > /dev/null 2>&1
         echo "$1 Installed Successfully"
     else
@@ -18,7 +30,7 @@ install_wordpress() {
     while [ -d "/var/www/html/wordpress$i" ]; do
         i=$((i+1))
     done
-    sudo yum update -y
+    run_cmd update -y
     sudo mkdir -p /srv/www/
     sudo chown apache: /srv/www/
     curl https://wordpress.org/latest.tar.gz | sudo -u apache tar zx -C /srv/www/ && sudo mv /srv/www/wordpress /srv/www/wordpress$i
@@ -26,32 +38,12 @@ install_wordpress() {
     sudo chown -R apache:apache /var/www/html/wordpress$i
 }
 
-# Function to install and configure PHP
-install_php() {
-    # Detect the OS version
-    os_version=$(rpm -E %{rhel})
-
-    # Install EPEL repository for older systems
-    if [ "$os_version" -le 7 ]; then
-      sudo yum install -y epel-release
-    fi
-
-    # Install required dependencies
-    sudo yum install -y yum-utils
-
-    # Install Remi repository
-    sudo yum install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
-
-    # Enable the desired PHP version (e.g., PHP 8.0)
-    sudo yum-config-manager --enable remi-php81
-
-    # Install PHP and necessary extensions
-    sudo yum install -y php php-{bcmath,curl,gd,intl,json,mbstring,mysqlnd,xml,zip}
-}
 
 # Function to install and configure PHP
 install_php() {
     # Get current PHP version
+    os_version=$(rpm -E %{rhel})
+
     PHP_VER=$(php -v 2>/dev/null | grep -o -m 1 -E '[0-9]\.[0-9]+' || echo '0')
 
     # Compare PHP version with 8.0 using bc since bash doesn't support floating point comparisons
@@ -60,17 +52,26 @@ install_php() {
     # If PHP version is less than 8.0 or doesn't exist, install PHP 8.1
     if [ "$PHP_VER_CHK" -eq "1" ]; then
         if [ "$os_version" -le 7 ]; then
-        sudo yum install -y epel-release
+        sudo run_cmd install -y epel-release
         fi
 
-        # Install required dependencies
-        sudo yum install -y yum-utils
+        if [ "$PACKAGE_MANAGER" == "yum" ]; then
+            run_cmd install -y yum-utils
+        fi
 
         # Install Remi repository
-        sudo yum install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
+        sudo run_cmd install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
 
         # Enable the desired PHP version (e.g., PHP 8.0)
-        sudo yum-config-manager --enable remi-php81
+        if [ "$PACKAGE_MANAGER" == "yum" ]; then
+            sudo yum-config-manager --enable remi-php81
+        fi
+
+        if [ "$PACKAGE_MANAGER" == "dnf" ]; then
+            dnf module reset php
+            dnf module install php:remi-8.1
+        fi
+
     else
         echo "PHP version $PHP_VER is already installed and is equal to or greater than 8.0"
     fi
@@ -90,7 +91,7 @@ generate_keys() {
 configure_database() {
     if ! [ -x "$(command -v mysql)" ]; then
         echo "No database engine found. Installing MariaDB..."
-        sudo yum install -y mariadb-server
+        sudo run_cmd install -y mariadb-server
         sudo systemctl enable mariadb
         sudo systemctl start mariadb
     else
