@@ -21,6 +21,29 @@ check_webserver() {
     fi
 }
 
+# Function to install and configure PHP
+install_php() {
+    # Get current PHP version
+    PHP_VER=$(php -v 2>/dev/null | grep -o -m 1 -E '[0-9]\.[0-9]+' || echo '0')
+
+    # Compare PHP version with 8.0 using bc since bash doesn't support floating point comparisons
+    PHP_VER_CHK=$(echo "$PHP_VER < 8.0" | bc)
+
+    # If PHP version is less than 8.0 or doesn't exist, install PHP 8.1
+    if [ "$PHP_VER_CHK" -eq "1" ]; then
+        # Add Ondrej's repository
+        sudo apt-get install -y software-properties-common apt-transport-https lsb-release ca-certificates curl
+        wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+        sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+
+        # Update the package lists
+        sudo apt-get update
+
+    else
+        echo "PHP version $PHP_VER is already installed and is equal to or greater than 8.0"
+    fi
+}
+
 # Function to install WordPress
 install_wordpress() {
     i=1
@@ -92,6 +115,7 @@ finalizing() {
 
 
 # Check and install dependencies
+install_php
 deps=("ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip")
 for dep in "${deps[@]}"
 do

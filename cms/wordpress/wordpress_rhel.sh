@@ -43,10 +43,37 @@ install_php() {
     sudo yum install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
 
     # Enable the desired PHP version (e.g., PHP 8.0)
-    sudo yum-config-manager --enable remi-php80
+    sudo yum-config-manager --enable remi-php81
 
     # Install PHP and necessary extensions
     sudo yum install -y php php-{bcmath,curl,gd,intl,json,mbstring,mysqlnd,xml,zip}
+}
+
+# Function to install and configure PHP
+install_php() {
+    # Get current PHP version
+    PHP_VER=$(php -v 2>/dev/null | grep -o -m 1 -E '[0-9]\.[0-9]+' || echo '0')
+
+    # Compare PHP version with 8.0 using bc since bash doesn't support floating point comparisons
+    PHP_VER_CHK=$(echo "$PHP_VER < 8.0" | bc)
+
+    # If PHP version is less than 8.0 or doesn't exist, install PHP 8.1
+    if [ "$PHP_VER_CHK" -eq "1" ]; then
+        if [ "$os_version" -le 7 ]; then
+        sudo yum install -y epel-release
+        fi
+
+        # Install required dependencies
+        sudo yum install -y yum-utils
+
+        # Install Remi repository
+        sudo yum install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
+
+        # Enable the desired PHP version (e.g., PHP 8.0)
+        sudo yum-config-manager --enable remi-php81
+    else
+        echo "PHP version $PHP_VER is already installed and is equal to or greater than 8.0"
+    fi
 }
 
 generate_keys() {
@@ -109,10 +136,12 @@ finalizing() {
 
 
 # Check and install dependencies
-deps=("ghostscript" "httpd" "php" "php-bcmath" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-xml" "php-zip" "openssl")
+
+install_php
+deps=("ghostscript" "php" "php-bcmath" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-xml" "php-zip" "openssl")
 for dep in "${deps[@]}"
 do
     check_installed "$dep"
 done
 
-install_wordpress && install_php && configure_database && configure_webserver && finalizing
+install_wordpress && configure_database && configure_webserver && finalizing
