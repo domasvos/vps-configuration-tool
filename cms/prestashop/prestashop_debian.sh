@@ -99,7 +99,7 @@ install_presta() {
     rm -rf /tmp/prestashop-$latest.zip
 
     # Use Composer to Download project's dependencies
-    composer install -d /var/www/html/prestashop$i/ -n
+    COMPOSER_ALLOW_SUPERUSER=1 composer install -d /var/www/html/prestashop$i/ -n --ignore-platform-req=ext-gd
 
     # Use NPM to create project's assets
     cd /var/www/html/prestashop$i/
