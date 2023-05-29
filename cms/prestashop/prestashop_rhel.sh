@@ -22,7 +22,7 @@ enable_php_repo() {
         dnf install -y epel-release
         dnf install -y https://rpms.remirepo.net/enterprise/remi-release-$(rpm -E %rhel).rpm
         dnf module reset -y php
-        dnf module enable -y php:remi-8.0
+        dnf module enable -y php:remi-8.1
         dnf config-manager --set-enabled remi-safe
     elif [ "$PACKAGE_MANAGER" == "yum" ]; then
         yum install -y epel-release
@@ -41,7 +41,7 @@ check_modules() {
     $PACKAGE_MANAGER update -y
 
     # Dependencies
-    deps=("httpd" "php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
+    deps=("php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
 
     for dep in "${deps[@]}"
     do
