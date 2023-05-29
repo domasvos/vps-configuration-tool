@@ -1,16 +1,15 @@
 #!/bin/bash
 
+run_cmd() {
+    sudo $PACKAGE_MANAGER $@
+}
+
 # Check if DNF or YUM is used as package manager
 if [ -x "$(command -v dnf)" ]; then
     PACKAGE_MANAGER="dnf"
 else
     PACKAGE_MANAGER="yum"
 fi
-
-run_cmd() {
-    sudo $PACKAGE_MANAGER $@
-}
-
 
 # Function to check if a command is installed
 check_installed() {
@@ -52,7 +51,7 @@ install_php() {
     # If PHP version is less than 8.0 or doesn't exist, install PHP 8.1
     if [ "$PHP_VER_CHK" -eq "1" ]; then
         if [ "$os_version" -le 7 ]; then
-        sudo run_cmd install -y epel-release
+        run_cmd install -y epel-release
         fi
 
         if [ "$PACKAGE_MANAGER" == "yum" ]; then
@@ -60,16 +59,15 @@ install_php() {
         fi
 
         # Install Remi repository
-        sudo run_cmd install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
+        run_cmd install -y https://rpms.remirepo.net/enterprise/remi-release-$os_version.rpm
 
-        # Enable the desired PHP version (e.g., PHP 8.0)
+        # Enable the desired PHP version (e.g., PHP 8.1)
         if [ "$PACKAGE_MANAGER" == "yum" ]; then
             sudo yum-config-manager --enable remi-php81
         fi
 
         if [ "$PACKAGE_MANAGER" == "dnf" ]; then
-            dnf module reset php
-            dnf module install php:remi-8.1
+            dnf module reset php -y
         fi
 
     else
@@ -91,15 +89,15 @@ generate_keys() {
 configure_database() {
     if ! [ -x "$(command -v mysql)" ]; then
         echo "No database engine found. Installing MariaDB..."
-        sudo run_cmd install -y mariadb-server
+        run_cmd install -y mariadb-server
         sudo systemctl enable mariadb
         sudo systemctl start mariadb
     else
         echo "A database engine is already installed."
     fi
+    read -p "Enter WordPress database name: " dbname
     read -p "Enter WordPress database username: " dbuser
     read -p "Enter WordPress database password: " dbpass
-    read -p "Enter WordPress database password: " dbname
     sudo mysql -e "CREATE DATABASE $dbname DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
     sudo mysql -e "GRANT ALL ON $dbname.* TO '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';"
     sudo mysql -e "FLUSH PRIVILEGES;"
@@ -139,7 +137,7 @@ finalizing() {
 # Check and install dependencies
 
 install_php
-deps=("ghostscript" "php" "php-bcmath" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-xml" "php-zip" "openssl")
+deps=("ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "openssl")
 for dep in "${deps[@]}"
 do
     check_installed "$dep"

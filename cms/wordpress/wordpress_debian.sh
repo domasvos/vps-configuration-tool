@@ -24,13 +24,14 @@ check_webserver() {
 # Function to install and configure PHP
 install_php() {
     # Get current PHP version
-    PHP_VER=$(php -v 2>/dev/null | grep -o -m 1 -E '[0-9]\.[0-9]+' || echo '0')
+    os_version=$(lsb_release -rs)
 
-    # Compare PHP version with 8.0 using bc since bash doesn't support floating point comparisons
-    PHP_VER_CHK=$(echo "$PHP_VER < 8.0" | bc)
+    # Get current PHP version
+    PHP_VER=$(php -v 2>/dev/null | grep -o -m 1 -E '[0-9]+\.[0-9]+' || echo '0')
+    PHP_MAJOR_VER=$(echo $PHP_VER | cut -d'.' -f1)
 
-    # If PHP version is less than 8.0 or doesn't exist, install PHP 8.1
-    if [ "$PHP_VER_CHK" -eq "1" ]; then
+    # If PHP major version is not '8', install PHP 8.1
+    if [ "$PHP_MAJOR_VER" -ne "8" ]; then
         # Add Ondrej's repository
         sudo apt-get install -y software-properties-common apt-transport-https lsb-release ca-certificates curl
         wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
@@ -70,10 +71,13 @@ generate_keys() {
 
 # Function to configure the database for WordPress
 configure_database() {
-    if [ -x "$(command -v mariadb)" ]; then
-        echo "MariaDB is installed"
+    if ! [ -x "$(command -v mysql)" ]; then
+        echo "No database engine found. Installing MariaDB..."
+        apt install -y mariadb-server
+        sudo systemctl enable mariadb
+        sudo systemctl start mariadb
     else
-        check_installed "mariadb-server"
+        echo "A database engine is already installed."
     fi
     read -p "Enter WordPress database username: " wpuser
     read -p "Enter WordPress database password: " wppass
