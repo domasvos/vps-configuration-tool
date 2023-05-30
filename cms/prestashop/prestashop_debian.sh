@@ -102,7 +102,7 @@ install_presta() {
     COMPOSER_ALLOW_SUPERUSER=1 composer install -d /var/www/html/prestashop$i/ -n --ignore-platform-req=ext-gd
 
     # Use NPM to create project's assets
-    cd /var/www/html/prestashop$i/
+    cd /var/www/html/prestashop$i
     npm install --legacy-peer-deps -g npm@6
     make assets
     cd -
