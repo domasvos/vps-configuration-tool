@@ -1,5 +1,6 @@
 #!/bin/bash
 
+clear
 function check_package_installed() {
   if command -v apt-get &> /dev/null; then
     dpkg -s "$1" &> /dev/null
@@ -24,6 +25,24 @@ function install_certbot() {
   fi
 }
 
+finalizing() {
+    # Set the text color to gold
+    clear
+    echo -e "\033[33m"
+
+    # Print table header
+    printf "+-------------------+------------------------------------+\n"
+    printf "| %-17s | %-34s |\n" "SSL" "Installation Completed"
+    printf "+-------------------+------------------------------------+\n"
+
+    # Print table rows with blinking values
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Website URL" "https://$domain" && sleep 0.1
+
+    # Print table footer
+    printf "+-------------------+------------------------------------+\n"
+}
+
+
 function list_domain_names() {
   for file in /etc/nginx/conf.d/*; do
     grep -oP "server_name\s+\K[^;]+" "$file"
@@ -46,6 +65,4 @@ read -p "Enter the domain you want to install SSL certificate for: " domain
 sudo certbot --nginx -d "$domain"
 
 # Restart the Nginx web server
-sudo systemctl restart nginx
-
-echo "SSL certificate installed successfully for $domain."
+sudo systemctl restart nginx && finalizing
