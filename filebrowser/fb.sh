@@ -73,7 +73,7 @@ finalizing() {
     printf "+-------------------+------------------------------------+\n"
 
     # Print table rows with blinking values
-    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Website URL" "http://$ip_address:$port" && sleep 0.1
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "FileBrowser URL" "http://$ip_address:$port" && sleep 0.1
 
     # Print table footer
     printf "+-------------------+------------------------------------+\n"

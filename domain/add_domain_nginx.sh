@@ -10,13 +10,22 @@ function check_domain_exists {
 }
 
 finalizing() {
-
+    # Set the text color to gold
     clear
-    echo -e "\n+--------------------------+"
-    echo -e "| \033[32mCONFIGURATION COMPLETED\033[0m |"
-    echo -e "+--------------------------+\n"
-    
+    echo -e "\033[33m"
+
+    # Print table header
+    printf "+-------------------+------------------------------------+\n"
+    printf "| %-17s | %-34s |\n" "Domain" "Configuration completed"
+    printf "+-------------------+------------------------------------+\n"
+
+    # Print table rows with blinking values
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Website URL" "http://$domain" && sleep 0.1
+
+    # Print table footer
+    printf "+-------------------+------------------------------------+\n"
 }
+
 
 
 # Ask the user for a domain name
