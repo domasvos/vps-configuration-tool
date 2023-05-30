@@ -24,6 +24,15 @@ function install_certbot() {
   fi
 }
 
+finalizing() {
+
+    clear
+    echo -e "\n+--------------------------+"
+    echo -e "| \033[32mSSL INSTALLATION COMPLETED\033[0m |"
+    echo -e "+--------------------------+\n"
+    
+}
+
 function list_domain_names() {
   for file in /etc/nginx/conf.d/*; do
     grep -oP "server_name\s+\K[^;]+" "$file"
@@ -48,4 +57,4 @@ sudo certbot --nginx -d "$domain"
 # Restart the Nginx web server
 sudo systemctl restart nginx
 
-echo "SSL certificate installed successfully for $domain."
+finalizing

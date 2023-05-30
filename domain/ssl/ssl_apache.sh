@@ -39,6 +39,15 @@ function list_domain_names() {
   fi
 }
 
+finalizing() {
+
+    clear
+    echo -e "\n+--------------------------+"
+    echo -e "| \033[32mSSL INSTALLATION COMPLETED\033[0m |"
+    echo -e "+--------------------------+\n"
+    
+}
+
 # Install Certbot if it's not already installed
 if ! check_package_installed "certbot"; then
   install_certbot
@@ -64,4 +73,4 @@ else
   return 1
 fi
 
-echo "SSL certificate installed successfully for $domain."
+finalizing

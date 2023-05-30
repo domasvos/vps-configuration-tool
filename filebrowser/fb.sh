@@ -62,14 +62,29 @@ enable_port() {
     done
 }
 
+finalizing() {
+    # Set the text color to gold
+    clear
+    echo -e "\033[33m"
+
+    # Print table header
+    printf "+-------------------+------------------------------------+\n"
+    printf "| %-17s | %-34s |\n" "FileBrowser" "Installation Completed"
+    printf "+-------------------+------------------------------------+\n"
+
+    # Print table rows with blinking values
+    printf "| \033[31m%-17s\033[33m | \033[5m%-34s\033[0m\033[33m |\n" "Website URL" "http://$ip_address:$port" && sleep 0.1
+
+    # Print table footer
+    printf "+-------------------+------------------------------------+\n"
+}
+
 
 main() {
     echo "Enter the root folder for File Browser (default: /var/www/html):"
     read -r root_folder
 
-    update_system && install_filebrowser && enable_port && create_configuration "${root_folder:-/var/www/html}" && create_service && enable_service
-
-    echo "You can access your filebrowser here http://$ip_address:$port"
+    update_system && install_filebrowser && enable_port && create_configuration "${root_folder:-/var/www/html}" && create_service && enable_service && finalizing
 }
 
 web_server=$1
