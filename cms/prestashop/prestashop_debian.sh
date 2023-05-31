@@ -18,7 +18,16 @@ check_modules() {
     sudo apt update -y
 
     # Dependancies
-    deps=("libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl")
+    if [[ "$web_server" == "nginx" ]]; then
+        deps=("ghostscript" "php-fpm" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl" "openssl")
+    else
+        deps=("ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl" "openssl")
+    fi
+
+    for dep in "${deps[@]}"
+    do
+        check_installed "$dep"
+    done
 
     # Check if PHP does not exist, if not - install it
     if ! which php >/dev/null 2>&1; then 

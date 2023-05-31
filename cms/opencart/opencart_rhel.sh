@@ -45,7 +45,11 @@ check_modules() {
     run_cmd update -y
 
     # Dependencies
-    deps=("php" "php-bcmath" "php-cli" "php-common" "php-curl" "php-gd" "php-intl" "php-json" "php-mbstring" "php-mysqlnd" "php-opcache" "php-pdo" "php-pecl-zip" "php-xml" "php-process" "unzip" "wget" "curl" "make" "gcc")
+    if [[ "$web_server" == "nginx" ]]; then
+        deps=("unzip" "wget" "curl" "make" "gcc" "ghostscript" "php-fpm" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl" "openssl")
+    else
+        deps=("unzip" "wget" "curl" "make" "gcc" "ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl" "openssl")
+    fi
 
     for dep in "${deps[@]}"
     do

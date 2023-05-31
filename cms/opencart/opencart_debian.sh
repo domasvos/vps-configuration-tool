@@ -23,7 +23,11 @@ check_modules() {
     apt-get update
 
     # Dependancies
-    deps=("mariadb-server" "libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-fpm")
+    if [[ "$web_server" == "nginx" ]]; then
+        deps=("ghostscript" "php8.1-fpm" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-common" "php8.1-xsl" "openssl")
+    else
+        deps=("ghostscript" "libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-common" "php8.1-xsl" "openssl")
+    fi
 
     for dep in "${deps[@]}"
     do
@@ -79,6 +83,14 @@ install_opencart() {
 
 configure_database() {
 
+    if ! [ -x "$(command -v mysql)" ]; then
+        echo "No database engine found. Installing MariaDB..."
+        apt install -y mariadb-server
+        sudo systemctl enable mariadb
+        sudo systemctl start mariadb
+    else
+        echo "A database engine is already installed."
+    fi
     # Ask for database variables
     read -p "Enter a name for the new database: " dbname
     read -p "Enter a username for the new database: " dbuser

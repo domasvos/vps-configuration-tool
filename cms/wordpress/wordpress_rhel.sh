@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "$web_server"
+
 run_cmd() {
     sudo $PACKAGE_MANAGER $@
 }
