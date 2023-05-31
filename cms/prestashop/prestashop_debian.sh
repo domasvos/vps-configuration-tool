@@ -19,9 +19,9 @@ check_modules() {
 
     # Dependancies
     if [[ "$web_server" == "nginx" ]]; then
-        deps=("ghostscript" "php-fpm" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl" "openssl")
+        deps=("ghostscript" "php8.1-fpm" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-common" "php8.1-xsl" "openssl")
     else
-        deps=("ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "php-gd" "php-common" "php-xsl" "openssl")
+        deps=("ghostscript" "libapache2-mod-php8.1" "php8.1" "php8.1-bcmath" "php8.1-curl" "php8.1-imagick" "php8.1-intl" "php8.1-json" "php8.1-mbstring" "php8.1-mysql" "php8.1-xml" "php8.1-zip" "php8.1-gd" "php8.1-common" "php8.1-xsl" "openssl")
     fi
 
     for dep in "${deps[@]}"
