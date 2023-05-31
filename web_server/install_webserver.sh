@@ -62,16 +62,14 @@ install_webserver() {
 }
 
 finalizing() {
-
+    # Set the text color to gold
     clear
-    echo -e "\n+--------------------------+"
-    echo -e "| \033[32mINSTALLATION COMPLETED\033[0m |"
-    echo -e "+--------------------------+\n"
-    
-    read -n1 -p "Press any key to return to the main menu..."
-    echo -e "\n"
-    return
+    echo -e "\033[33m"
 
+    # Print table header
+    printf "+-------------------+------------------------------------+\n"
+    printf "| %-17s | %-34s |\n" "Web Server" "Installation completed"
+    printf "+-------------------+------------------------------------+\n"
 }
 
 # Install the web server and return to start.sh
