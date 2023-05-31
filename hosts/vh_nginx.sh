@@ -3,7 +3,7 @@
 # Check if the script received the required arguments
 if [ $# -ne 1 ]; then
     echo "Usage: $0 directory"
-    return 1
+    exit 1
 fi
 
 directory="$1"
@@ -30,7 +30,7 @@ if command -v nginx &> /dev/null; then
     config_dir="/etc/nginx/conf.d"
 else
     echo "Nginx web server not found."
-    return 1
+    exit 1
 fi
 
 # Create the virtual host configuration file
@@ -42,28 +42,18 @@ server {
     index index.html index.htm index.php;
 
     location / {
-        try_files \$uri \$uri/ =404;
+        try_files \$uri \$uri/ /index.php?\$args;
     }
 
-    # Extract PHP-FPM directory dynamically
     location ~ \.php$ {
         include fastcgi_params;
-
-        # Search for PHP-FPM socket file
-        set \$php_fpm_socket_file "";
-        if (-e /run/php-fpm) {
-            set \$php_fpm_socket_file "/run/php-fpm/*.sock";
-        }
-        if (-e /var/run/php-fpm) {
-            set \$php_fpm_socket_file "/var/run/php-fpm/*.sock";
-        }
-
-        # Use the first matching PHP-FPM socket file found
-        fastcgi_pass unix:\$php_fpm_socket_file;
-
-        # Additional configuration for PHP-FPM
+        fastcgi_pass unix:/run/php-fpm/www.sock;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         fastcgi_param PHP_VALUE "upload_max_filesize=32M";
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
     }
 }
 EOF

@@ -138,7 +138,12 @@ finalizing() {
 # Check and install dependencies
 
 install_php
-deps=("ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "openssl")
+if [[ "$web_server" == "nginx" ]]; then
+    deps=("ghostscript" "php-fpm" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "openssl")
+else
+    deps=("ghostscript" "libapache2-mod-php" "php" "php-bcmath" "php-curl" "php-imagick" "php-intl" "php-json" "php-mbstring" "php-mysql" "php-xml" "php-zip" "openssl")
+fi
+
 for dep in "${deps[@]}"
 do
     check_installed "$dep"

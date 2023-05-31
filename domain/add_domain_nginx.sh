@@ -74,6 +74,9 @@ fi
 if grep -q "server_name " "/etc/nginx/conf.d/$conf_file.conf"; then
   # Replace the server_name directive with the chosen domain name
   sudo sed -i "s/server_name .*/server_name $domain;/" "/etc/nginx/conf.d/$conf_file.conf"
+  # Replace the listen directive with port 80
+  sudo sed -i "s/listen .*/listen 80;/" "/etc/nginx/conf.d/$conf_file.conf"
+
 else
   # Insert a new server_name directive with the chosen domain name after the listen directive
   sudo sed -i "/listen .*/a server_name $domain;" "/etc/nginx/conf.d/$conf_file.conf"
