@@ -68,6 +68,7 @@ install_php() {
 
         if [ "$PACKAGE_MANAGER" == "dnf" ]; then
             dnf module reset php -y
+            sudo dnf module enable php:remi-8.1 -y
         fi
 
     else
