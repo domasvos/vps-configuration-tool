@@ -62,6 +62,16 @@ if ! check_package_installed "certbot"; then
   install_certbot
 fi
 
+# Restart the Apache web server
+if command -v apache2 &> /dev/null; then
+  sudo systemctl restart apache2 && finalizing
+elif command -v httpd &> /dev/null; then
+  sudo systemctl restart httpd && finalizing
+else
+  echo "No supported web server found."
+  return 1
+fi
+
 # List available domain names
 echo "Available domains:"
 list_domain_names
