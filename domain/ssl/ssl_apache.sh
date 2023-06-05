@@ -64,9 +64,9 @@ fi
 
 # Restart the Apache web server
 if command -v apache2 &> /dev/null; then
-  sudo systemctl restart apache2 && finalizing
+  sudo systemctl restart apache2
 elif command -v httpd &> /dev/null; then
-  sudo systemctl restart httpd && finalizing
+  sudo systemctl restart httpd
 else
   echo "No supported web server found."
   return 1
